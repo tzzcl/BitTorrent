@@ -40,7 +40,7 @@ tracker_response* preprocess_tracker_response(int sockfd)
      perror("Error, cannot read socket from tracker");
      exit(-6);
    }
-   tmp[26]=0;
+   rcvline[26]=0;
    puts(rcvline);
    // Content-Length
    len = recv(sockfd,rcvline,16,0);

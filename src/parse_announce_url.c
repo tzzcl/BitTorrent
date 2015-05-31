@@ -4,8 +4,8 @@
 announce_url_t* parse_announce_url(char* announce)
 {
   char* announce_ind;
-  char port_str[6];  // ¶Ë¿ÚºÅ×î´óÎª5Î»Êı×Ö
-  int port_len = 0; // ¶Ë¿ÚºÅÖĞµÄ×Ö·ûÊı
+  char port_str[6];  // ç«¯å£å·æœ€å¤§ä¸º5ä½æ•°å­—
+  int port_len = 0; // ç«¯å£å·ä¸­çš„å­—ç¬¦æ•°
   int port;
   char* url;
   int url_len = 0;

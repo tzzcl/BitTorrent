@@ -3,10 +3,10 @@
 
 extern int g_done;
 
-// ÕıÈ·µÄ¹Ø±Õ¿Í»§¶Ë
+// æ­£ç¡®çš„å…³é—­å®¢æˆ·ç«¯
 void client_shutdown(int sig)
 {
-  // ÉèÖÃÈ«¾ÖÍ£Ö¹±äÁ¿ÒÔÍ£Ö¹Á¬½Óµ½ÆäËûpeer, ÒÔ¼°ÔÊĞíÆäËûpeerµÄÁ¬½Ó. Set global stop variable so that we stop trying to connect to peers and
-  // Õâ¿ØÖÆÁËÆäËûpeerÁ¬½ÓµÄÌ×½Ó×ÖºÍÁ¬½Óµ½ÆäËûpeerµÄÏß³Ì.
+  // è®¾ç½®å…¨å±€åœæ­¢å˜é‡ä»¥åœæ­¢è¿æ¥åˆ°å…¶ä»–peer, ä»¥åŠå…è®¸å…¶ä»–peerçš„è¿æ¥. Set global stop variable so that we stop trying to connect to peers and
+  // è¿™æ§åˆ¶äº†å…¶ä»–peerè¿æ¥çš„å¥—æ¥å­—å’Œè¿æ¥åˆ°å…¶ä»–peerçš„çº¿ç¨‹.
   g_done = 0;
 }

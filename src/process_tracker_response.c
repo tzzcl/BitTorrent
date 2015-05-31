@@ -34,6 +34,13 @@ tracker_response* preprocess_tracker_response(int sockfd)
    }
    memset(rcvline,0xFF,MAXLINE);
    memset(tmp,0x0,MAXLINE);
+   len = recv(sockfd,rcvline,26,0);
+   if(len <= 0)
+   {
+     perror("Error, cannot read socket from tracker");
+     exit(-6);
+   }
+   puts(rcvline);
    // Content-Length
    len = recv(sockfd,rcvline,16,0);
    if(len <= 0)
@@ -52,13 +59,6 @@ tracker_response* preprocess_tracker_response(int sockfd)
    // 读取Content-Length的数据部分
    char c[2];
    char num[MAXLINE];
-   len = recv(sockfd,rcvline,26,0);
-   if(len <= 0)
-   {
-     perror("Error, cannot read socket from tracker");
-     exit(-6);
-   }
-   puts(rcvline);
    int count = 0;
    c[0] = 0; c[1] = 0;
    while(c[0] != '\r' && c[1] != '\n')

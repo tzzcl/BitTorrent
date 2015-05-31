@@ -31,6 +31,7 @@ tracker_response* preprocess_tracker_response(int sockfd)
    if(strncmp(tmp,"HTTP/1.0 200 OK\r\n",strlen("HTTP/1.0 200 OK\r\n")))
    {
      perror("Error, didn't match HTTP line");
+     puts("AAA");
      exit(-6);
    }
    memset(rcvline,0xFF,MAXLINE);

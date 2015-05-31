@@ -76,7 +76,7 @@ tracker_response* preprocess_tracker_response(int sockfd)
       count++;
    }
    datasize = atoi(num);
-   //printf("NUMBER RECEIVED: %d\n",datasize);
+   printf("NUMBER RECEIVED: %d\n",datasize);
    memset(rcvline,0xFF,MAXLINE);
    memset(num,0x0,MAXLINE);
    // 读取Content-type和Pragma行

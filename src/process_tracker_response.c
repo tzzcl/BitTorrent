@@ -49,6 +49,7 @@ tracker_response* preprocess_tracker_response(int sockfd)
      exit(-6);
    }
    strncpy(tmp,rcvline,16);
+   tmp[16]=0;
    if(strncmp(tmp,"Content-Length: ",strlen("Content-Length: ")))
    {
      perror("Error, didn't match Content-Length line");

@@ -27,15 +27,7 @@ tracker_response* preprocess_tracker_response(int sockfd)
      exit(-6);
    }
    strncpy(tmp,rcvline,17);
-   char temp[26];memset(temp,0,sizeof(temp));
-   strncpy(temp,"HTTP/1.0 200 OK\r\n",strlen("HTTP/1.0 200 OK\r\n"));
-   printf("%d\n",strlen("HTTP/1.0 200 OK\r\n"));
-   for (int i=0;i<20;i++)
-   {
-      printf("%d:%d %d\n",i,temp[i],tmp[i]);
-   }
-   printf("%d\n",strcmp(temp,tmp));
-   if(strncmp(tmp,"HTTP/1.0 200 OK\r\n",strlen("HTTP/1.0 200 OK\r\n")))
+   if(strncmp(tmp,"HTTP/1.1 200 OK\r\n",strlen("HTTP/1.1 200 OK\r\n")))
    {
      perror("Error, didn't match HTTP line");
      exit(-6);

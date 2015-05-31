@@ -58,7 +58,7 @@ tracker_response* preprocess_tracker_response(int sockfd)
      perror("Error, cannot read socket from tracker");
      exit(-6);
    }
-   puts(recvline);
+   puts(rcvline);
    int count = 0;
    c[0] = 0; c[1] = 0;
    while(c[0] != '\r' && c[1] != '\n')

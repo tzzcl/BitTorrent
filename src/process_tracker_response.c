@@ -27,7 +27,8 @@ tracker_response* preprocess_tracker_response(int sockfd)
      exit(-6);
    }
    strncpy(tmp,rcvline,17);
-   char temp[26];strncpy(temp,"HTTP/1.0 200 OK\r\n",strlen("HTTP/1.0 200 OK\r\n"));
+   char temp[26];memset(temp,0,sizeof(temp));
+   strncpy(temp,"HTTP/1.0 200 OK\r\n",strlen("HTTP/1.0 200 OK\r\n"));
    printf("%d\n",strlen("HTTP/1.0 200 OK\r\n"));
    for (int i=0;i<17;i++)
    {

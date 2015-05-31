@@ -40,6 +40,7 @@ tracker_response* preprocess_tracker_response(int sockfd)
      perror("Error, cannot read socket from tracker");
      exit(-6);
    }
+   tmp[26]=0;
    puts(rcvline);
    // Content-Length
    len = recv(sockfd,rcvline,16,0);
@@ -49,7 +50,6 @@ tracker_response* preprocess_tracker_response(int sockfd)
      exit(-6);
    }
    strncpy(tmp,rcvline,16);
-   tmp[16]=0;
    if(strncmp(tmp,"Content-Length: ",strlen("Content-Length: ")))
    {
      perror("Error, didn't match Content-Length line");

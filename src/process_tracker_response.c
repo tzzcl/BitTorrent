@@ -33,6 +33,7 @@ tracker_response* preprocess_tracker_response(int sockfd)
    {
       printf("%d:%d %d\n",i,temp[i],tmp[i]);
    }
+   printf("%d\n",strcmp(temp,tmp));
    if(strncmp(tmp,"HTTP/1.0 200 OK\r\n",strlen("HTTP/1.0 200 OK\r\n")))
    {
      perror("Error, didn't match HTTP line");

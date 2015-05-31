@@ -20,42 +20,42 @@
 
 int is_bigendian();
 
-// ´ÓÒ»¸öÒÑÁ¬½ÓÌ×½Ó×Ö½ÓÊÕÊı¾İµÄº¯Êı
+// ä»ä¸€ä¸ªå·²è¿æ¥å¥—æ¥å­—æ¥æ”¶æ•°æ®çš„å‡½æ•°
 int recvline(int fd, char **line);
 int recvlinef(int fd, char *format, ...);
 
-// Á¬½Óµ½ÁíÒ»Ì¨Ö÷»ú, ·µ»Øsockfd
+// è¿æ¥åˆ°å¦ä¸€å°ä¸»æœº, è¿”å›sockfd
 int connect_to_host(char* ip, int port);
 
-// ¼àÌıÖ¸¶¨¶Ë¿Ú, ·µ»Ø¼àÌıÌ×½Ó×Ö
+// ç›‘å¬æŒ‡å®šç«¯å£, è¿”å›ç›‘å¬å¥—æ¥å­—
 int make_listen_port(int port);
 
-// ·µ»ØÎÄ¼şµÄ³¤¶È, µ¥Î»Îª×Ö½Ú
+// è¿”å›æ–‡ä»¶çš„é•¿åº¦, å•ä½ä¸ºå­—èŠ‚
 int file_len(FILE* fname);
 
-// ´ÓtorrentÎÄ¼şÖĞÌáÈ¡Êı¾İ
+// ä»torrentæ–‡ä»¶ä¸­æå–æ•°æ®
 torrentmetadata_t* parsetorrentfile(char* filename);
 
-// ´ÓTrackerÏìÓ¦ÖĞÌáÈ¡ÓĞÓÃµÄÊı¾İ
+// ä»Trackerå“åº”ä¸­æå–æœ‰ç”¨çš„æ•°æ®
 tracker_response* preprocess_tracker_response(int sockfd);
 
-// ´ÓTrackerÏìÓ¦ÖĞÌáÈ¡peerÁ¬½ÓĞÅÏ¢
+// ä»Trackerå“åº”ä¸­æå–peerè¿æ¥ä¿¡æ¯
 tracker_data* get_tracker_data(char* data, int len);
-void get_peers(tracker_data* td, be_node* peer_list); // ÉÏÃæº¯ÊıµÄ¸¨Öúº¯Êı
-void get_peer_data(peerdata* peer, be_node* ben_res); // ÉÏÃæº¯ÊıµÄ¸¨Öúº¯Êı
+void get_peers(tracker_data* td, be_node* peer_list); // ä¸Šé¢å‡½æ•°çš„è¾…åŠ©å‡½æ•°
+void get_peer_data(peerdata* peer, be_node* ben_res); // ä¸Šé¢å‡½æ•°çš„è¾…åŠ©å‡½æ•°
 
-// ÖÆ×÷Ò»¸ö·¢ËÍ¸øTrackerµÄHTTPÇëÇó, ·µ»Ø¸Ã×Ö·û´®
+// åˆ¶ä½œä¸€ä¸ªå‘é€ç»™Trackerçš„HTTPè¯·æ±‚, è¿”å›è¯¥å­—ç¬¦ä¸²
 char* make_tracker_request(int event, int* mlen);
 
-// ´¦ÀíÀ´×ÔpeerµÄÕûÊıµÄ¸¨Öúº¯Êı
+// å¤„ç†æ¥è‡ªpeerçš„æ•´æ•°çš„è¾…åŠ©å‡½æ•°
 int reverse_byte_orderi(int i);
 int make_big_endian(int i);
 int make_host_orderi(int i);
 
-// ctrl-cĞÅºÅµÄ´¦Àíº¯Êı
+// ctrl-cä¿¡å·çš„å¤„ç†å‡½æ•°
 void client_shutdown(int sig);
 
-// ´Óannounce urlÖĞÌáÈ¡Ö÷»úºÍ¶Ë¿ÚÊı¾İ
+// ä»announce urlä¸­æå–ä¸»æœºå’Œç«¯å£æ•°æ®
 announce_url_t* parse_announce_url(char* announce);
 
 #endif

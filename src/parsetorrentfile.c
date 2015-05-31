@@ -3,7 +3,7 @@
 #include "util.h"
 #include "sha1.h"
 
-// ×¢Òâ: Õâ¸öº¯ÊıÖ»ÄÜ´¦Àíµ¥ÎÄ¼şÄ£Ê½torrent
+// æ³¨æ„: è¿™ä¸ªå‡½æ•°åªèƒ½å¤„ç†å•æ–‡ä»¶æ¨¡å¼torrent
 torrentmetadata_t* parsetorrentfile(char* filename)
 {
   int i;
@@ -13,7 +13,7 @@ torrentmetadata_t* parsetorrentfile(char* filename)
   char* data;
   torrentmetadata_t* ret;
 
-  // ´ò¿ªÎÄ¼ş, »ñÈ¡Êı¾İ²¢½âÂë×Ö·û´®
+  // æ‰“å¼€æ–‡ä»¶, è·å–æ•°æ®å¹¶è§£ç å­—ç¬¦ä¸²
   f = fopen(filename,"r");
   flen = file_len(f);
   data = (char*)malloc(flen*sizeof(char));
@@ -21,7 +21,7 @@ torrentmetadata_t* parsetorrentfile(char* filename)
   fclose(f);
   ben_res = be_decoden(data,flen);
 
-  // ±éÀú½Úµã, ¼ì²éÎÄ¼ş½á¹¹²¢Ìî³äÏàÓ¦µÄ×Ö¶Î.
+  // éå†èŠ‚ç‚¹, æ£€æŸ¥æ–‡ä»¶ç»“æ„å¹¶å¡«å……ç›¸åº”çš„å­—æ®µ.
   if(ben_res->type != BE_DICT)
   {
     perror("Torrent file isn't a dictionary");
@@ -35,15 +35,15 @@ torrentmetadata_t* parsetorrentfile(char* filename)
     exit(-13);
   }
 
-  // ¼ÆËãÕâ¸ötorrentµÄinfo_hashÖµ
-  // ×¢Òâ: SHA1º¯Êı·µ»ØµÄ¹şÏ£Öµ´æ´¢ÔÚÒ»¸öÕûÊıÊı×éÖĞ, ¶ÔÓÚĞ¡¶Ë×Ö½ÚĞòÖ÷»úÀ´Ëµ,
-  // ÔÚÓëtracker»òÆäËûpeer·µ»ØµÄ¹şÏ£Öµ½øĞĞ±È½ÏÊ±, ĞèÒª¶Ô±¾µØ´æ´¢µÄ¹şÏ£Öµ
-  // ½øĞĞ×Ö½ÚĞò×ª»». µ±ÄãÉú³É·¢ËÍ¸øtrackerµÄÇëÇóÊ±, Ò²ĞèÒª¶Ô×Ö½ÚĞò½øĞĞ×ª»».
+  // è®¡ç®—è¿™ä¸ªtorrentçš„info_hashå€¼
+  // æ³¨æ„: SHA1å‡½æ•°è¿”å›çš„å“ˆå¸Œå€¼å­˜å‚¨åœ¨ä¸€ä¸ªæ•´æ•°æ•°ç»„ä¸­, å¯¹äºå°ç«¯å­—èŠ‚åºä¸»æœºæ¥è¯´,
+  // åœ¨ä¸trackeræˆ–å…¶ä»–peerè¿”å›çš„å“ˆå¸Œå€¼è¿›è¡Œæ¯”è¾ƒæ—¶, éœ€è¦å¯¹æœ¬åœ°å­˜å‚¨çš„å“ˆå¸Œå€¼
+  // è¿›è¡Œå­—èŠ‚åºè½¬æ¢. å½“ä½ ç”Ÿæˆå‘é€ç»™trackerçš„è¯·æ±‚æ—¶, ä¹Ÿéœ€è¦å¯¹å­—èŠ‚åºè¿›è¡Œè½¬æ¢.
   char* info_loc, *info_end;
-  info_loc = strstr(data,"infod");  // ²éÕÒinfo¼ü, ËüµÄÖµÊÇÒ»¸ö×Öµä
-  info_loc += 4; // ½«Ö¸ÕëÖ¸ÏòÖµ¿ªÊ¼µÄµØ·½
+  info_loc = strstr(data,"infod");  // æŸ¥æ‰¾infoé”®, å®ƒçš„å€¼æ˜¯ä¸€ä¸ªå­—å…¸
+  info_loc += 4; // å°†æŒ‡é’ˆæŒ‡å‘å€¼å¼€å§‹çš„åœ°æ–¹
   info_end = data+flen-1;
-  // È¥µô½áÎ²µÄe
+  // å»æ‰ç»“å°¾çš„e
   if(*info_end == 'e')
   {
     --info_end;
@@ -53,7 +53,7 @@ torrentmetadata_t* parsetorrentfile(char* filename)
   int len = 0;
   for(p=info_loc; p<=info_end; p++) len++;
 
-  // ¼ÆËãÉÏÃæ×Ö·û´®µÄSHA1¹şÏ£ÖµÒÔ»ñÈ¡info_hash
+  // è®¡ç®—ä¸Šé¢å­—ç¬¦ä¸²çš„SHA1å“ˆå¸Œå€¼ä»¥è·å–info_hash
   SHA1Context sha;
   SHA1Reset(&sha);
   SHA1Input(&sha,(const unsigned char*)info_loc,len);
@@ -70,7 +70,7 @@ torrentmetadata_t* parsetorrentfile(char* filename)
   }
   printf("\n");
 
-  // ¼ì²é¼ü²¢ÌáÈ¡¶ÔÓ¦µÄĞÅÏ¢
+  // æ£€æŸ¥é”®å¹¶æå–å¯¹åº”çš„ä¿¡æ¯
   int filled=0;
   for(i=0; ben_res->val.d[i].val != NULL; i++)
   {
@@ -81,7 +81,7 @@ torrentmetadata_t* parsetorrentfile(char* filename)
 	  memcpy(ret->announce,ben_res->val.d[i].val->val.s,strlen(ben_res->val.d[i].val->val.s));
       filled++;
     }
-    // infoÊÇÒ»¸ö×Öµä, Ëü»¹ÓĞÒ»Ğ©ÆäËûÎÒÃÇ¹ØĞÄµÄ¼ü
+    // infoæ˜¯ä¸€ä¸ªå­—å…¸, å®ƒè¿˜æœ‰ä¸€äº›å…¶ä»–æˆ‘ä»¬å…³å¿ƒçš„é”®
     if(!strncmp(ben_res->val.d[i].key,"info",strlen("info")))
     {
       be_dict* idict;
@@ -91,7 +91,7 @@ torrentmetadata_t* parsetorrentfile(char* filename)
         exit(-3);
       }
       idict = ben_res->val.d[i].val->val.d;
-      // ¼ì²éÕâ¸ö×ÖµäµÄ¼ü
+      // æ£€æŸ¥è¿™ä¸ªå­—å…¸çš„é”®
       for(j=0; idict[j].key != NULL; j++)
       { 
         if(!strncmp(idict[j].key,"length",strlen("length")))
@@ -121,11 +121,11 @@ torrentmetadata_t* parsetorrentfile(char* filename)
           filled++;
         }
 
-      } // forÑ­»·½áÊø
-    } // info¼ü´¦Àí½áÊø
+      } // forå¾ªç¯ç»“æŸ
+    } // infoé”®å¤„ç†ç»“æŸ
   }
   
-  // È·ÈÏÒÑÌî³äÁË±ØÒªµÄ×Ö¶Î
+  // ç¡®è®¤å·²å¡«å……äº†å¿…è¦çš„å­—æ®µ
   
   be_free(ben_res);  
  

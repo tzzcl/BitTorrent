@@ -1,15 +1,15 @@
 #include "util.h"
 #include "btdata.h"
 
-// ÖÆ×÷Ò»¸ö·¢ËÍ¸øTrackerµÄHTTPÇëÇó. Ê¹ÓÃÒ»Ğ©È«¾Ö±äÁ¿À´Ìî³äÇëÇóÖĞµÄ²ÎÊı,  
-// Èçinfo_hash, peer_idÒÔ¼°ÓĞ¶àÉÙ×Ö½ÚÒÑÉÏ´«ºÍÏÂÔØ, µÈµÈ. 
+// åˆ¶ä½œä¸€ä¸ªå‘é€ç»™Trackerçš„HTTPè¯·æ±‚. ä½¿ç”¨ä¸€äº›å…¨å±€å˜é‡æ¥å¡«å……è¯·æ±‚ä¸­çš„å‚æ•°,  
+// å¦‚info_hash, peer_idä»¥åŠæœ‰å¤šå°‘å­—èŠ‚å·²ä¸Šä¼ å’Œä¸‹è½½, ç­‰ç­‰. 
 //
-// ÊÂ¼ş: 0 - started, 1 - stopped, 2 - completed
-// ÕâĞ©ºêµÄ¶¨Òå¼ûÍ·ÎÄ¼şbtdata.h
-// Õâ¸öº¯Êı·µ»ØHTTPÇëÇóÏûÏ¢, ÏûÏ¢µÄ³¤¶ÈĞ´Èëmlen
+// äº‹ä»¶: 0 - started, 1 - stopped, 2 - completed
+// è¿™äº›å®çš„å®šä¹‰è§å¤´æ–‡ä»¶btdata.h
+// è¿™ä¸ªå‡½æ•°è¿”å›HTTPè¯·æ±‚æ¶ˆæ¯, æ¶ˆæ¯çš„é•¿åº¦å†™å…¥mlen
 char* make_tracker_request(int event, int* mlen)
 { 
-  // ·ÖÅäÒ»¸öºÜ´óµÄ¿Õ¼ä¸øMESG, ²¢Ìî³äËü
+  // åˆ†é…ä¸€ä¸ªå¾ˆå¤§çš„ç©ºé—´ç»™MESG, å¹¶å¡«å……å®ƒ
   char *MESG;
   char* cur;
   int i;
@@ -19,7 +19,7 @@ char* make_tracker_request(int event, int* mlen)
   strcpy(cur,"GET /announce?");
   cur += strlen("GET /announce?");
   
-  // ÌîÈëinfo_hash
+  // å¡«å…¥info_hash
   char hexdigs[16] = {'0', '1', '2', '3', '4', '5', '6', '7', 
                       '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
   strcpy(cur,"info_hash=");
@@ -100,7 +100,7 @@ char* make_tracker_request(int event, int* mlen)
     cur += strlen("completed");
     break;
   
-  // ³ıÁËÉÏÊöÇé¿öÒÔÍâ, ²»·¢ËÍevent²ÎÊı
+  // é™¤äº†ä¸Šè¿°æƒ…å†µä»¥å¤–, ä¸å‘é€eventå‚æ•°
   }
   
   strcpy(cur," HTTP/1.1\r\n\r\n");

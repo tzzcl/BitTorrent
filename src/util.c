@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -65,7 +64,7 @@ int make_listen_port(int port)
   return sockfd;
 }
 
-// ¼ÆËãÒ»¸ö´ò¿ªÎÄ¼şµÄ×Ö½ÚÊı
+// è®¡ç®—ä¸€ä¸ªæ‰“å¼€æ–‡ä»¶çš„å­—èŠ‚æ•°
 int file_len(FILE* fp)
 {
   int sz;
@@ -76,9 +75,9 @@ int file_len(FILE* fp)
 }
 
 // recvline(int fd, char **line)
-// ÃèÊö: ´ÓÌ×½Ó×Öfd½ÓÊÕ×Ö·û´®
-// ÊäÈë: Ì×½Ó×ÖÃèÊö·ûfd, ½«½ÓÊÕµÄĞĞÊı¾İĞ´Èëline
-// Êä³ö: ¶ÁÈ¡µÄ×Ö½ÚÊı
+// æè¿°: ä»å¥—æ¥å­—fdæ¥æ”¶å­—ç¬¦ä¸²
+// è¾“å…¥: å¥—æ¥å­—æè¿°ç¬¦fd, å°†æ¥æ”¶çš„è¡Œæ•°æ®å†™å…¥line
+// è¾“å‡º: è¯»å–çš„å­—èŠ‚æ•°
 int recvline(int fd, char **line)
 {
   int retVal;
@@ -104,7 +103,7 @@ int recvline(int fd, char **line)
     lineIndex += 1;
     
     /*
-      Èç¹û»ñµÃµÄ×Ö·ûÌ«¶à, ¾ÍÖØĞÂ·ÖÅäĞĞ»º´æ.
+      å¦‚æœè·å¾—çš„å­—ç¬¦å¤ªå¤š, å°±é‡æ–°åˆ†é…è¡Œç¼“å­˜.
     */
     if (lineIndex > lineSize)
     {
@@ -113,7 +112,7 @@ int recvline(int fd, char **line)
       
       if (newLine == NULL)
       {
-        retVal    = -1; /* reallocÊ§°Ü */
+        retVal    = -1; /* reallocå¤±è´¥ */
         break;
       }
       
@@ -138,9 +137,9 @@ int recvline(int fd, char **line)
 /* End recvline */
 
 // recvlinef(int fd, char *format, ...)
-// ÃèÊö: ´ÓÌ×½Ó×Öfd½ÓÊÕ×Ö·û´®.Õâ¸öº¯ÊıÔÊĞíÄãÖ¸¶¨Ò»¸ö¸ñÊ½×Ö·û´®, ²¢½«½á¹û´æ´¢ÔÚÖ¸¶¨µÄ±äÁ¿ÖĞ
-// ÊäÈë: Ì×½Ó×ÖÃèÊö·ûfd, ¸ñÊ½×Ö·û´®format, Ö¸ÏòÓÃÓÚ´æ´¢½á¹ûÊı¾İµÄ±äÁ¿µÄÖ¸Õë
-// Êä³ö: ¶ÁÈ¡µÄ×Ö½ÚÊı
+// æè¿°: ä»å¥—æ¥å­—fdæ¥æ”¶å­—ç¬¦ä¸².è¿™ä¸ªå‡½æ•°å…è®¸ä½ æŒ‡å®šä¸€ä¸ªæ ¼å¼å­—ç¬¦ä¸², å¹¶å°†ç»“æœå­˜å‚¨åœ¨æŒ‡å®šçš„å˜é‡ä¸­
+// è¾“å…¥: å¥—æ¥å­—æè¿°ç¬¦fd, æ ¼å¼å­—ç¬¦ä¸²format, æŒ‡å‘ç”¨äºå­˜å‚¨ç»“æœæ•°æ®çš„å˜é‡çš„æŒ‡é’ˆ
+// è¾“å‡º: è¯»å–çš„å­—èŠ‚æ•°
 int recvlinef(int fd, char *format, ...)
 {
   va_list argv;

@@ -40,8 +40,6 @@ tracker_response* preprocess_tracker_response(int sockfd)
      perror("Error, cannot read socket from tracker");
      exit(-6);
    }
-   rcvline[26]=0;
-   puts(rcvline);
    // Content-Length
    len = recv(sockfd,rcvline,16,0);
    if(len <= 0)
@@ -79,14 +77,6 @@ tracker_response* preprocess_tracker_response(int sockfd)
    printf("NUMBER RECEIVED: %d\n",datasize);
    memset(rcvline,0xFF,MAXLINE);
    memset(num,0x0,MAXLINE);
-   // 读取Content-type和Pragma行
-
-   len = recv(sockfd,rcvline,18,0);
-   if(len <= 0)
-   {
-     perror("Error, cannot read socket from tracker");
-     exit(-6);
-   }
    // 去除响应中额外的\r\n空行
    len = recv(sockfd,rcvline,2,0);
    if(len <= 0)

@@ -174,7 +174,7 @@ void get_peers(tracker_data* td, be_node* peer_list)
   // 计算列表中的peer数
     int l=strlen(peer_list->val.s);
     for (int i=0;i<l;i++)
-      printf("%u\n",peer_list->val.s[i]);
+      printf("%d\n",(unsigned char)peer_list->val.s[i]);
     // 找到一个peer, 增加numpeers
     numpeers++;
 

@@ -176,11 +176,11 @@ void get_peers(tracker_data* td, be_node* peer_list)
   {
     printf("%d\n",i);
     // 确认元素是一个字典
-    if(peer_list->val.l[i]->type != BE_DICT)
+    /*if(peer_list->val.l[i]->type != BE_DICT)
     {
       perror("Expecting dict, got something else");
       exit(-12);
-    }
+    }*/
 
     // 找到一个peer, 增加numpeers
     numpeers++;

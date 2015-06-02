@@ -157,7 +157,6 @@ tracker_data* get_tracker_data(char* data, int len)
     if(!strncmp(ben_res->val.d[i].key,"peers",strlen("peers")))
     { 
       be_node* peer_list = ben_res->val.d[i].val;
-      printf("%d\n",peer_list->type);
       get_peers(ret,peer_list);
     }
   }
@@ -173,7 +172,8 @@ void get_peers(tracker_data* td, be_node* peer_list)
   int numpeers = 0;
 
   // 计算列表中的peer数
-    printf("%s\n",peer_list->val.s);
+    int l=strlen(peer_list->val.s);
+    printf("%d %s\n",l,peer_list->val.s);
     // 找到一个peer, 增加numpeers
     numpeers++;
 

@@ -122,7 +122,7 @@ tracker_data* get_tracker_data(char* data, int len)
 {
   tracker_data* ret;
   be_node* ben_res;
-  printf("%s:%s\n",__FUNCTION__,data);
+  //printf("%s:%s\n",__FUNCTION__,data);
   ben_res = be_decoden(data,len);
   if(ben_res->type != BE_DICT)
   {
@@ -156,7 +156,7 @@ tracker_data* get_tracker_data(char* data, int len)
     // peers键
     if(!strncmp(ben_res->val.d[i].key,"peers",strlen("peers")))
     { 
-      printf("%s\n",ben_res->val.d[i].key);
+      printf("%d\n",ben_res->type);
 
       be_node* peer_list = ben_res->val.d[i].val;
       get_peers(ret,peer_list);

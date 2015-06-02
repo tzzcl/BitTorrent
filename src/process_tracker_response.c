@@ -155,8 +155,8 @@ tracker_data* get_tracker_data(char* data, int len)
     // peers键
     if(!strncmp(ben_res->val.d[i].key,"peers",strlen("peers")))
     { 
+      printf("%s\n",ben_res->val.d[i].key);
       be_node* peer_list = ben_res->val.d[i].val;
-      printf("%p\n",peer_list);
       get_peers(ret,peer_list);
     }
   }

@@ -175,14 +175,7 @@ void get_peers(tracker_data* td, be_node* peer_list)
   // 计算列表中的peer数
   for (i=0; peer_list->val.l[i] != NULL; i++)
   {
-    printf("%d\n",i);
-    // 确认元素是一个字典
-    if(peer_list->val.l[i]->type != BE_DICT)
-    {
-      perror("Expecting dict, got something else");
-      exit(-12);
-    }
-
+    
     // 找到一个peer, 增加numpeers
     numpeers++;
   }

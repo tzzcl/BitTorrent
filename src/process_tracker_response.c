@@ -192,6 +192,7 @@ void my_get_peers(tracker_data* td,be_node* peer_list){
     td->peers[i].ip=malloc(sizeof(char)*15);
     memset(td->peers[i].ip,0,sizeof(char)*15);
     sprintf(td->peers[i].ip,"%d.%d.%d.%d",(unsigned char)temp[0],(unsigned char)temp[1],(unsigned char)temp[2],(unsigned char)temp[3]);
+    td->peers[i].port=(((unsigned char)temp[0])<<8)+(unsigned char)temp[1];
     temp+=6;
   }
   // 获取每个peer的数据

@@ -168,6 +168,7 @@ tracker_data* get_tracker_data(char* data, int len)
 }
 void my_get_peers(tracker_data* ret,be_node* peer_list){
   char* temp=peer_list->val.s;
+  printf("%s:%s\n",__FUNCTION__,temp);
 }
 // 处理来自Tracker的字典模式的peer列表
 void get_peers(tracker_data* td, be_node* peer_list)

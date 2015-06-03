@@ -188,7 +188,7 @@ void my_get_peers(tracker_data* td,be_node* peer_list){
   temp=source;
   for (int i=0;i<numpeers;i++)
   {
-    printf("%d %d %d %d\n",temp[0],temp[1],temp[2],temp[3]);
+    printf("%d %d %d %d\n",(int)temp[0],(int)temp[1],(int)temp[2],(int)temp[3]);
 
     temp+=6;
   }

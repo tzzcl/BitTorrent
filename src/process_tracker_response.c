@@ -166,9 +166,28 @@ tracker_data* get_tracker_data(char* data, int len)
 
   return ret;
 }
-void my_get_peers(tracker_data* ret,be_node* peer_list){
-  char* temp=peer_list->val.s;
-  printf("%s:%s\n",__FUNCTION__,temp);
+void my_get_peers(tracker_data* td,be_node* peer_list){
+  char* source=peer_list->val.s;
+  printf("%s:%s\n",__FUNCTION__,source);
+  char* temp=source;
+  int numpeers=0;
+  while (temp[0]!=0) {
+    temp+=6;
+    numpeers++;
+  }
+  printf("Num peers: %d\n",numpeers);
+
+  // 为peer分配空间
+  td->numpeers = numpeers;
+  td->peers = (peerdata*)malloc(numpeers*sizeof(peerdata));
+  if(td->peers == NULL)
+  {
+    perror("Couldn't allocate peers");
+    exit(-12);
+  }
+
+  // 获取每个peer的数据
+  return;
 }
 // 处理来自Tracker的字典模式的peer列表
 void get_peers(tracker_data* td, be_node* peer_list)

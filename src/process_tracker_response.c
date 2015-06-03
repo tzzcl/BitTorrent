@@ -170,7 +170,6 @@ void get_peers(tracker_data* td, be_node* peer_list)
 {
   int i;
   int numpeers = 0;
-
   // 计算列表中的peer数
     int l=strlen(peer_list->val.s);
     for (int i=0;i<l;i++)

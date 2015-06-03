@@ -157,13 +157,17 @@ tracker_data* get_tracker_data(char* data, int len)
     if(!strncmp(ben_res->val.d[i].key,"peers",strlen("peers")))
     { 
       be_node* peer_list = ben_res->val.d[i].val;
-      get_peers(ret,peer_list);
+      //get_peers(ret,peer_list);
+      my_get_peers(ret,peer_list);
     }
   }
  
   be_free(ben_res);
 
   return ret;
+}
+void my_get_peers(tracker_data* ret,be_node* peer_list){
+  char* temp=peer_list->val.s;
 }
 // 处理来自Tracker的字典模式的peer列表
 void get_peers(tracker_data* td, be_node* peer_list)

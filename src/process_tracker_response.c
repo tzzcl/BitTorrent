@@ -185,7 +185,13 @@ void my_get_peers(tracker_data* td,be_node* peer_list){
     perror("Couldn't allocate peers");
     exit(-12);
   }
+  temp=source;
+  for (int i=0;i<numpeers;i++)
+  {
+    printf("%d %d %d %d\n",temp[0],temp[1],temp[2],temp[3]);
 
+    temp+=6;
+  }
   // 获取每个peer的数据
   return;
 }

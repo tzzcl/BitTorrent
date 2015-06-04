@@ -41,6 +41,7 @@ tracker_response* preprocess_tracker_response(int sockfd);
 
 // 从Tracker响应中提取peer连接信息
 tracker_data* get_tracker_data(char* data, int len);
+void my_get_peers(tracker_data* td, be_node* peer_list);
 void get_peers(tracker_data* td, be_node* peer_list); // 上面函数的辅助函数
 void get_peer_data(peerdata* peer, be_node* ben_res); // 上面函数的辅助函数
 

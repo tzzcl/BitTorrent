@@ -11,7 +11,8 @@ SOURCES=src/util.c \
 				src/parse_announce_url.c \
         src/parsetorretnfile.c \
 				src/process_tracker_response.c \
-				src/simpletorrent.c
+				src/simpletorrent.c \
+				src/pwp.c
 
 OBJS=src/util.o \
      src/bencode.o \
@@ -21,7 +22,8 @@ OBJS=src/util.o \
 		 src/parse_announce_url.o \
      src/parsetorrentfile.o \
 		 src/process_tracker_response.o \
-		 src/simpletorrent.o
+		 src/simpletorrent.o \
+		 src/pwp.o
 
 all: ${TARGET}
 	-@git add . --ignore-errors

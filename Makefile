@@ -37,7 +37,7 @@ ${TARGET}: ${OBJS}
 
 clean:
 	rm -rf src/*.o
-	rm -rf bin/${TARGET}
+	rm -rf bin
 	rm -rf src/*.core
 	rm -rf *.o
 	rm -rf ${TARGET}

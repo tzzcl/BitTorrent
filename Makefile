@@ -29,7 +29,7 @@ all: ${TARGET}
 	-@git add . --ignore-errors
 	-@(echo "> compile" && uname -a) | git commit -F - $(GITFLAGS)
 ${TARGET}: ${OBJS}
-	mkdir bin
+	mkdir -p bin
 	${CC} ${CFLAGS} -o bin/${TARGET} ${LIBS} ${OBJS}
 
 %.o: $.c

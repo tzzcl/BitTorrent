@@ -17,7 +17,7 @@ announce_url_t* parse_announce_url(char* announce)
     announce_ind--;
   }
   strncpy(port_str,announce_ind+1,port_len);
-  port_str[port_len+1] = '\0';
+  port_str[port_len] = '\0';
   port = atoi(port_str);
     
   char* p;
@@ -44,7 +44,7 @@ announce_url_t* parse_announce_url(char* announce)
   
   url = (char*)malloc((url_len+1)*sizeof(char)); // +1 for \0
   strncpy(url,p,url_len);
-  url[url_len+1] = '\0';
+  url[url_len] = '\0';
   
   ret->hostname = url;
   ret->port = port;

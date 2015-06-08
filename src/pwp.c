@@ -58,7 +58,6 @@ static inline void set_bit_at_index(char *bitfield, int index, int bit){
 static inline void safe_free(void* content){
 	if (content!=NULL)
 		free(content);
-
 }
 static inline void drop_conn(p2p_cb* nowp2p)
 {
@@ -131,16 +130,32 @@ void send_request(int connfd,int index,int begin,int length){
 
 }
 void send_interest(int connfd){
-
+	char msg[5];
+	memset(msg,0,sizeof(msg));
+	*(int*)msg = htonl(1);
+	msg[4] = 2;
+    	send(connfd,msg,5,0);
 }
 void send_choke(int connfd){
-
+	char msg[5];
+	memset(msg,0,sizeof(msg));
+	*(int*)msg = htonl(1);
+	msg[4] = 0;
+    	send(connfd,msg,5,0);
 }
 void send_not_interest(int connfd){
-
+	char msg[5];
+	memset(msg,0,sizeof(msg));
+	*(int*)msg = htonl(1);
+	msg[4] = 3;
+    	send(connfd,msg,5,0);
 }
-void send_unchoke(int connfd){
-
+void send_msg(int connfd){
+	char msg[5];
+	memset(msg,0,sizeof(msg));
+	*(int*)msg = htonl(1);
+	msg[4] = 1;
+    	send(connfd,msg,5,0);
 }
 void send_piece(int connfd,int index,int begin,int length){
 

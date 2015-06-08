@@ -189,8 +189,8 @@ void my_get_peers(tracker_data* td,be_node* peer_list){
   for (int i=0;i<numpeers;i++)
   {
     printf("%d %d %d %d\n",(unsigned char)temp[0],(unsigned char)temp[1],(unsigned char)temp[2],(unsigned char)temp[3]);
-    td->peers[i].ip=malloc(sizeof(char)*15);
-    memset(td->peers[i].ip,0,sizeof(char)*15);
+    td->peers[i].ip=malloc(sizeof(char)*17);
+    memset(td->peers[i].ip,0,sizeof(char)*17);
     sprintf(td->peers[i].ip,"%d.%d.%d.%d",(unsigned char)temp[0],(unsigned char)temp[1],(unsigned char)temp[2],(unsigned char)temp[3]);
     td->peers[i].port=(((unsigned char)temp[4])<<8)+(unsigned char)temp[5];
     memset(td->peers[i].id,0,sizeof(td->peers[i].id));

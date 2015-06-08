@@ -1,5 +1,6 @@
 #include "pwp.h"
 #include "file.h"
+#include "util.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -122,10 +123,28 @@ p2p_cb* new_init_p2p(){
 	list_init(&temp->list);
 	return temp;
 }
+int getconn(char* ip,int port){
 
+}
 void* p2p_run_thread(void* param){
 	p2p_thread *current = (p2p_thread *)param;
-
+	int connfd;
+	if (current->is_connect!=1){
+		connfd=current->connfd;
+	}
+	else{
+		connfd=connect_to_host(current->ip,current->port);
+		if (connfd==-1)
+		{
+			int tmp = errno;
+            			printf("Error when connect to peer %s:%d, reason:%s\n", current->ip, current->port, strerror(tmp));
+            			return NULL;
+		}
+		current->connfd=connfd;
+	}
+	int is_connect=current->is_connect;
+	p2p_cb* newcb=new_init_p2p();
+	newcb->connfd=connfd;
 }
 void send_have(int connfd,int index){
 	char msg[9];

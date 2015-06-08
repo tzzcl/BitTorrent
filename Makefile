@@ -32,7 +32,7 @@ all: ${TARGET}
 	-@(echo "> compile" && uname -a) | git commit -F - $(GITFLAGS)
 ${TARGET}: ${OBJS}
 	mkdir -p bin
-	${CC} ${CFLAGS} -o bin/${TARGET} ${LIBS} ${OBJS}
+	${CC} ${CFLAGS} -o bin/${TARGET} ${OBJS} ${LIBS}
 
 %.o: $.c
 	$(CC) -c $(CFLAGS) $@ $<

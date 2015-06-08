@@ -1,4 +1,5 @@
 #include "pwp.h"
+#include "file.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -126,8 +127,23 @@ void* p2p_run_thread(void* param){
 	p2p_thread *current = (p2p_thread *)param;
 
 }
+void send_have(int connfd,int index){
+	char msg[9];
+	memset(msg,0,sizeof(msg));
+	*(int*)msg = htonl(1);
+	msg[4] = 4;
+	*(int*)(msg+5) = htonl(index);
+    	send(connfd,msg,9,0);	
+}
 void send_request(int connfd,int index,int begin,int length){
-
+	char msg[17];
+	memset(msg,0,sizeof(msg));
+	*(int*)msg = htonl(13);
+	msg[4] = 6;
+	*(int*)(msg+5) = htonl(index);
+	*(int*)(msg+9) = htonl(begin);
+	*(int*)(msg+13) = htonl(length);
+    	send(connfd,msg,17,0);	
 }
 void send_interest(int connfd){
 	char msg[5];
@@ -158,7 +174,14 @@ void send_msg(int connfd){
     	send(connfd,msg,5,0);
 }
 void send_piece(int connfd,int index,int begin,int length){
-
+	char* block=get_block(index);
+	char msg[13];
+	*(int*)msg = htonl(9+length);
+	msg[4] = 7;
+	*(int*)(msg+5) = htonl(index);
+	*(int*)(msg+9) = htonl(begin);
+    	send(connfd,msg,13,0);
+    	send(connfd,block+begin,length,0);
 }
 void send_handshake(int connfd){
 	char* pstr="BitTorrent protocol";

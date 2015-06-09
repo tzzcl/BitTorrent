@@ -181,6 +181,14 @@ void* p2p_run_thread(void* param){
 			drop_conn(newcb);
 			return NULL;
 		}
+		else{
+			pthread_mutex_lock(&p2p_mutex);
+			memcpy(newcb->peer_id,peer_id,20);
+			pthread_mutex_unlock(&p2p_mutex);
+			if (!is_connect){
+				send_handshake(connfd);
+			}
+		}
 	}
 }
 void send_have(int connfd,int index){

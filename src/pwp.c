@@ -166,6 +166,14 @@ void* p2p_run_thread(void* param){
 	{
 		printf("handshake received %d\n",len);
 		char str[len];
+		char reserve[8];
+		int info_hash[5];
+		char peer_id[20];
+		readn(connfd,str,len);
+		readn(connfd,reserve,8);
+		readn(connfd,info_hash,20);
+		for (int i=0;i<5;i++)
+			info_hash[i]=ntohl(info_hash[i]);
 	}
 }
 void send_have(int connfd,int index){

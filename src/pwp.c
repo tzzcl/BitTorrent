@@ -167,6 +167,9 @@ download_piece *init_download_piece(int index){
 	download_piece* now=malloc(sizeof(download_piece));
 	now->index=index;
 	now->sub_piece_size = SUB_PIECE_SIZE;
+	int real_len=real_piece_len(index);
+	int tmp1 = real_len/now->sub_piece_size;
+    	int tmp2 = (real_len%now->sub_piece_size != 0);
 	pthread_mutex_unlock(&download_mutex);
 }
 int select_next_subpiece(int index,int* begin,int* length){

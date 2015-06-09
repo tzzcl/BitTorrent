@@ -102,7 +102,13 @@ static inline int is_bitfield_empty(char *bitfield,int len){
     }
     return flag;
 }
-
+static int real_piece_len(int index){
+	int piece_num = globalInfo.torrentmeta->num_pieces;
+    	int piece_len = globalInfo.torrentmeta->piece_len;
+    	int total_len = globalInfo.torrentmeta->length;
+    	int real_piece_len = (index == piece_num-1)?(total_len - index * piece_len):(piece_len);
+    	return real_piece_len;
+}
 int valid_ip(char* ip){
 	ListHead* ptr;
 	pthread_mutex_lock(&p2p_mutex);
@@ -127,8 +133,91 @@ p2p_cb* new_init_p2p(){
 	list_init(&temp->list);
 	return temp;
 }
-int getconn(char* ip,int port){
-
+int select_piece(){//least first
+	int min_index=-1,min_val=1e8;
+	for (int i=0;i<globalInfo.torrentmeta->num_pieces;i++)
+	{
+		if (get_bit_at_index(globalInfo.bitfield,i)==0)
+		{
+			if (piece_counter[i]!=0&&piece_counter[i]<min_val){
+				min_val=piece_counter[i];
+				min_index=i;
+			}
+		}
+	}
+	return min_index;
+}
+download_piece* find_download_piece(int index){
+	ListHead* ptr;
+	pthread_mutex_lock(&download_mutex);
+	list_foreach(ptr,&download_piece_head){
+        	download_piece *tmp = list_entry(ptr,download_piece,list);
+        	//printf("downloading piece %d\n",tmp->index);
+        	if(tmp->index == index){
+              	pthread_mutex_unlock(&download_mutex);
+              	return tmp;
+        	}
+   	}
+	pthread_mutex_unlock(&download_mutex);
+	return NULL;
+}
+download_piece *init_download_piece(int index){
+	if (find_download_piece(index)!=NULL) return NULL;
+	pthread_mutex_lock(&download_mutex);
+	download_piece* now=malloc(sizeof(download_piece));
+	now->index=index;
+	now->sub_piece_size = SUB_PIECE_SIZE;
+	pthread_mutex_unlock(&download_mutex);
+}
+int select_next_subpiece(int index,int* begin,int* length){
+	ListHead* ptr;
+	pthread_mutex_lock(&download_mutex);
+	list_foreach(ptr,&download_piece_head){
+		download_piece* d_piece=list_entry(ptr,download_piece,list);
+		int rest=real_piece_len(index)%d_piece->sub_piece_size;
+		if (d_piece->index==index){
+			for (int i=0;i<d_piece->sub_piece_num;i++)
+			{
+				if (d_piece->sub_piece_state[i]==0)
+				{
+					*begin=i*d_piece->sub_piece_size;
+					if (i==d_piece->sub_piece_num-1&&rest!=0)
+					{
+						*length=rest;
+						pthread_mutex_unlock(&download_mutex);
+						return 1;
+					}
+					else
+					{
+						*length=d_piece->sub_piece_size;
+						pthread_mutex_unlock(&download_mutex);
+						return 1;
+					}
+				}
+			}
+			for (int i=0;i<d_piece->sub_piece_num;i++)
+			{
+				if (d_piece->sub_piece_state[i]==1)
+				{
+					*begin=i*d_piece->sub_piece_size;
+					int rest=globalInfo.torrentmeta->piece_len%d_piece->sub_piece_size;
+					if (i==d_piece->sub_piece_num-1&&rest!=0)
+					{
+						*length = rest;
+						pthread_mutex_unlock(&download_mutex);
+						return 1;
+					}
+					else{
+						*length=d_piece->sub_piece_size;
+						pthread_mutex_unlock(&download_mutex);
+						return 1;
+					}
+				}
+			}
+		}
+	}
+	pthread_mutex_unlock(&download_mutex);
+	return 0;
 }
 void* p2p_run_thread(void* param){
 	p2p_thread *current = (p2p_thread *)param;
@@ -251,8 +340,27 @@ void* p2p_run_thread(void* param){
 				pthread_mutex_lock(&piece_count_mutex);
 				piece_counter[index]++;
 				pthread_mutex_unlock(&piece_count_mutex);
-				if (get_bit_at_index(globalInfo.bitfield,index)==0){
+				if (get_bit_at_index(globalInfo.bitfield,index)==0){//send interest
+					send_interest(connfd);
+					pthread_mutex_lock(&p2p_mutex);
+					newcb->peer_interest=1;
+					pthread_mutex_unlock(&p2p_mutex);
+					pthread_mutex_lock(&first_req_mutex);
+					if (first_req==1){
+						pthread_mutex_unlock(&first_req_mutex);
+						pthread_mutex_lock(&p2p_mutex);
+						if (newcb->self_choke==0&&newcb->self_interest==1)
+						{
+							int begin,length;
+							select_next_subpiece(index,&begin,&length);
+							send_request(index,begin,length);
+							first_req=0;
+							download_piece* d_piece=init_download_piece(index);
+						}
+						pthread_mutex_unlock(&p2p_mutex);
 
+					}
+					pthread_mutex_unlock(&first_req_mutex);
 				}
 				break;
 			}

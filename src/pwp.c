@@ -1,6 +1,7 @@
 #include "pwp.h"
 #include "file.h"
 #include "util.h"
+#include "info.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -20,6 +21,9 @@ pthread_mutex_t p2p_mutex;
 pthread_mutex_t download_mutex;
 pthread_mutex_t first_req_mutex;
 pthread_mutex_t piece_count_mutex;
+struct globalArgs_t globalArgs;
+struct globalInfo_t globalInfo;
+int listenfd;
 static unsigned char set_bit[8] = {1,2,4,8,16,32,64,128};
 static int readn(int fd,void* content,size_t len)
 {
@@ -145,6 +149,9 @@ void* p2p_run_thread(void* param){
 	int is_connect=current->is_connect;
 	p2p_cb* newcb=new_init_p2p();
 	newcb->connfd=connfd;
+	strcpy(newcb->peer_ip,current->ip);
+	safe_free(current);
+	int bit=0;
 }
 void send_have(int connfd,int index){
 	char msg[9];

@@ -163,13 +163,19 @@ download_piece* find_download_piece(int index){
 }
 download_piece *init_download_piece(int index){
 	if (find_download_piece(index)!=NULL) return NULL;
-	pthread_mutex_lock(&download_mutex);
 	download_piece* now=malloc(sizeof(download_piece));
 	now->index=index;
 	now->sub_piece_size = SUB_PIECE_SIZE;
 	int real_len=real_piece_len(index);
 	int tmp1 = real_len/now->sub_piece_size;
     	int tmp2 = (real_len%now->sub_piece_size != 0);
+    	now->sub_piece_num=tmp1+tmp2;
+    	now->download_num=0;
+    	now->sub_piece_state=(int*)malloc(4*now->sub_piece_num);
+    	memset(now->sub_piece_state,0,sizeof(int)*now->sub_piece_num);
+    	list_init(&now->list);
+    	pthread_mutex_lock(&download_mutex);
+    	list_add_before(&download_piece_head,&now->list);
 	pthread_mutex_unlock(&download_mutex);
 }
 int select_next_subpiece(int index,int* begin,int* length){

@@ -151,7 +151,22 @@ void* p2p_run_thread(void* param){
 	newcb->connfd=connfd;
 	strcpy(newcb->peer_ip,current->ip);
 	safe_free(current);
-	int bit=0;
+	int bit=globalInfo.torrentmeta->num_pieces/8+(globalInfo.torrentmeta->num_pieces%8>0);
+	newcb->peer_field=(char*)malloc(bit);
+	memset(newcb->peer_field,0,bit);
+	pthread_mutex_lock(&p2p_mutex);
+	list_add_before(&p2p_cb_head,&newcb->list);
+	pthread_mutex_unlock(&p2p_mutex);
+	if (is_connect){
+		puts("send a handshake");
+		send_handshake(connfd);
+	}
+	char len;
+	if (readn(connfd,&len,1)>0)
+	{
+		printf("handshake received %d\n",len);
+		char str[len];
+	}
 }
 void send_have(int connfd,int index){
 	char msg[9];

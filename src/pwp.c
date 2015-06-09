@@ -199,7 +199,59 @@ void* p2p_run_thread(void* param){
             		printf("Error when send: %s", strerror(errno));
             		drop_conn(newcb);
             		return NULL;
-        }
+        		}
+	}
+	char pre[5];
+	while (readn(connfd,pre,4)>0)
+	{
+		ListHead * ptr;
+		pthread_mutex_lock(&download_mutex);
+		list_foreach(ptr,&download_piece_head){
+			download_piece* now_piece=list_entry(ptr,download_piece,list);
+		}
+		pthread_mutex_unlock(&download_mutex);
+		int len=ntohl(*(int*)pre);
+		if (len==0){
+			continue;
+		}
+		else{
+			readn(connfd,pre+4,1);
+		}
+		switch (pre[4]){
+			case 0:{//choke
+				pthread_mutex_lock(&p2p_mutex);
+				newcb->self_choke=1;
+				pthread_mutex_unlock(&p2p_mutex);
+				break;
+			}
+			case 1:{
+				pthread_mutex_lock(&p2p_mutex);
+				newcb->self_choke=0;
+				pthread_mutex_unlock(&p2p_mutex);
+				break;
+			}
+			case 2:{
+				break;
+			}
+			case 3:{
+				break;
+			}
+			case 4:{
+				break;
+			}
+			case 5:{
+				break;
+			}
+			case 6:{
+				break;
+			}
+			case 7:{
+				break;
+			}
+			case 8:{
+				break;
+			}
+		}
 	}
 }
 void send_have(int connfd,int index){

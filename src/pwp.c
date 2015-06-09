@@ -245,7 +245,15 @@ void* p2p_run_thread(void* param){
 			}
 			case 4:{//have
 				int index;
+				readn(connfd,&index,4);
+				index=htonl(index);
+				set_bit_at_index(newcb->peer_field,index,1);
+				pthread_mutex_lock(&piece_count_mutex);
+				piece_counter[index]++;
+				pthread_mutex_unlock(&piece_count_mutex);
+				if (get_bit_at_index(globalInfo.bitfield,index)==0){
 
+				}
 				break;
 			}
 			case 5:{

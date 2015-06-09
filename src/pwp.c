@@ -190,6 +190,17 @@ void* p2p_run_thread(void* param){
 			}
 		}
 	}
+	if (!is_bitfield_empty(globalInfo.bitfield,bit)){
+		char msg[5+bit];
+        		*(int*)msg= htonl(1+bit);
+       		msg[4] = 5;
+        		memcpy(msg+5,globalInfo.bitfield,bit);
+        		if (send(connfd,msg,5+bit,0) == -1){
+            		printf("Error when send: %s", strerror(errno));
+            		drop_conn(newcb);
+            		return NULL;
+        }
+	}
 }
 void send_have(int connfd,int index){
 	char msg[9];

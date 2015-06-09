@@ -174,6 +174,13 @@ void* p2p_run_thread(void* param){
 		readn(connfd,info_hash,20);
 		for (int i=0;i<5;i++)
 			info_hash[i]=ntohl(info_hash[i]);
+		readn(connfd,peer_id,20);
+		if (memcmp(info_hash,globalInfo.torrentmeta->info_hash,20)!=0)
+		{
+			puts("wrong hash message");
+			drop_conn(newcb);
+			return NULL;
+		}
 	}
 }
 void send_have(int connfd,int index){

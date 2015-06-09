@@ -16,7 +16,7 @@
 ListHead p2p_cb_head;
 ListHead download_piece_head;
 int first_req=1;
-int* piece_count;
+int* piece_counter;
 pthread_mutex_t p2p_mutex;
 pthread_mutex_t download_mutex;
 pthread_mutex_t first_req_mutex;
@@ -224,19 +224,28 @@ void* p2p_run_thread(void* param){
 				pthread_mutex_unlock(&p2p_mutex);
 				break;
 			}
-			case 1:{
+			case 1:{//unchoke
 				pthread_mutex_lock(&p2p_mutex);
 				newcb->self_choke=0;
 				pthread_mutex_unlock(&p2p_mutex);
 				break;
 			}
-			case 2:{
+			case 2:{//interest
+				pthread_mutex_lock(&p2p_mutex);
+				newcb->self_interest=1;
+				newcb->self_choke=0;
+				pthread_mutex_unlock(&p2p_mutex);
 				break;
 			}
 			case 3:{
+				pthread_mutex_lock(&p2p_mutex);
+				newcb->self_interest=0;
+				pthread_mutex_unlock(&p2p_mutex);
 				break;
 			}
-			case 4:{
+			case 4:{//have
+				int index;
+
 				break;
 			}
 			case 5:{
@@ -253,6 +262,20 @@ void* p2p_run_thread(void* param){
 			}
 		}
 	}
+	pthread_mutex_lock(&piece_count_mutex);
+    	for(int i = 0; i < globalInfo.torrentmeta->num_pieces; i++){
+        	if(get_bit_at_index(newcb->peer_field,i) == 1)
+            		piece_counter[i] --;
+    	}
+	pthread_mutex_unlock(&piece_count_mutex);
+	pthread_mutex_lock(&p2p_mutex);
+	list_del(&newcb->list);
+	pthread_mutex_unlock(&p2p_mutex);
+	safe_free(newcb->peer_field);
+	safe_free(newcb);
+	puts("quit p2p success");
+	return NULL;
+
 }
 void send_have(int connfd,int index){
 	char msg[9];

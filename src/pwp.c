@@ -365,15 +365,58 @@ void* p2p_run_thread(void* param){
 							send_request(index,begin,length);
 							first_req=0;
 							download_piece* d_piece=init_download_piece(index);
+							pthread_mutex_lock(&download_mutex);
+							d_piece->download_num++;
+							pthread_mutex_unlock(&download_mutex);
+							int subpiece_index=begin/d_piece->sub_piece_size;
+							d_piece->sub_piece_state[subpiece_index]=1;
 						}
 						pthread_mutex_unlock(&p2p_mutex);
 
 					}
-					pthread_mutex_unlock(&first_req_mutex);
+					else{
+						pthread_mutex_unlock(&first_req_mutex);
+						download_piece* d_piece=find_download_piece(index);
+						pthread_mutex_lock(&p2p_mutex);
+						pthread_mutex_lock(&download_mutex);
+						if (d_piece!=NULL&&d_piece->download_num<MAX_REQUEST
+							&&d_piece->download_num!=0
+							&&newcb->self_choke==0
+							&&newcb->peer_interest==1)
+							{
+								int begin,length;
+								select_next_subpiece(index,&begin,&length);
+								send_request(connfd,index,begin,length);
+								d_piece->download_num++;
+								int subpiece_index=begin/d_piece->sub_piece_size;
+								d_piece->sub_piece_state[subpiece_index]=1;
+							}
+						pthread_mutex_unlock(&p2p_mutex);
+						pthread_mutex_unlock(&download_mutex);
+					}
 				}
 				break;
 			}
 			case 5:{
+				char field[len-1];
+				readn(connfd,field,len-1);
+				if (len-1!=bit)
+				{
+					puts("wrong bitfield");
+					drop_conn(newcb);
+					return NULL;
+				}
+				unsigned char ch=field[len-2];
+				int offset = 8 - globalInfo.torrentmeta->num_pieces%8;
+				while (offset>=1&&offset<8)
+				{
+					if ((ch>>(offset-1))&1)
+					{
+						 puts("wrong idle bits");
+                                 				drop_conn(newcb);
+                                 				return NULL;
+					}
+				}
 				break;
 			}
 			case 6:{

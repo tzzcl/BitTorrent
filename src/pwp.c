@@ -501,15 +501,36 @@ void* p2p_run_thread(void* param){
 							}
 						}
 					}
-					pthread_mutex_unlock(&first_req_mutex);
 				}
 				pthread_mutex_unlock(&p2p_mutex);
 				break;
 			}
 			case 6:{
+				int temp[3];
+				readn(connfd,temp,12);
+				int index=ntohl(temp[0]);
+				int begin=ntohl(temp[1]);
+				int length=ntohl(temp[2]);
+				if (length>(1<<17))
+				{
+					puts("the length in request is larger than 2^17");
+                             			drop_conn(newcb);
+                             			return NULL ;
+				}
+				pthread_mutex_lock(&p2p_mutex);
+				if (newcb->self_interest==1&&newcb->peer_choke==0)
+				{
+					send_piece(connfd,index,begin,length);
+				}
+				else
+				{
+					puts("invalid request");
+				}
+				pthread_mutex_unlock(&p2p_mutex);
 				break;
 			}
-			case 7:{
+			case 7:{//piece
+				char payload[len-1];
 				break;
 			}
 			case 8:{

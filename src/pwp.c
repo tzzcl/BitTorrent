@@ -91,7 +91,13 @@ int listen_init(){
 	listen(listenfd,8);
 	return listenfd;
 }
-
+static inline int is_bitfield_complete(char *bitfield){
+    for(int i = 0; i < globalInfo.torrentmeta->num_pieces; i++){
+        if(get_bit_at_index(bitfield,i) != 1)
+            return 0;
+    }
+    return 1;
+}
 static inline int is_bitfield_empty(char *bitfield,int len){
     int flag = 1;
     for(int i = 0; i < len; i++){
@@ -531,6 +537,106 @@ void* p2p_run_thread(void* param){
 			}
 			case 7:{//piece
 				char payload[len-1];
+				readn(connfd,payload,len-1);
+				int index = ntohl(*(int*)payload);
+                        			int begin = ntohl(*(int*)(payload+4));
+                        			int length = len - 9;
+                        			download_piece* d_piece=find_download_piece(index);
+                        			if (d_piece==NULL) continue;
+                        			pthread_mutex_lock(&download_mutex);
+                        			set_block(index,begin,length,payload+8);
+                        			globalInfo.downloaded+=length;
+                        			int subpiece_index=begin/d_piece->sub_piece_size;
+                        			d_piece->sub_piece_state[subpiece_index]=2;
+                        			if (!select_next_subpiece(index,&begin,&length))
+                        			{
+                        				printf("piece %d has been dowmloaded successfully\n",index);
+                        				set_bit_at_index(globalInfo.bitfield,index,1);
+                        				list_del(&d_piece->list);
+                        				safe_free(d_piece->sub_piece_state);
+                        				safe_free(d_piece);
+                        				pthread_mutex_unlock(&download_mutex);
+                        				ListHead* ptr;
+                        				pthread_mutex_lock(&p2p_mutex);
+                        				list_foreach(ptr,&p2p_cb_head){
+                        					p2p_cb* tempp2p=list_entry(ptr,p2p_cb,list);
+                        					send_have(tempp2p->connfd,index);
+                        				}
+                        				pthread_mutex_unlock(&p2p_mutex);
+                        				if (is_bitfield_complete(globalInfo.bitfield))
+                        				{
+                        					puts("File Download Complete!");
+                        					ListHead* ptr;
+                        					pthread_mutex_lock(&p2p_mutex);
+                        					list_foreach(ptr,&p2p_cb_head)
+                        					{
+                        						p2p_cb* temp=list_entry(ptr,p2p_cb,list);
+                        						if (temp->peer_interest==1)
+                        						{
+                        							temp->peer_interest=0;
+                        							send_not_interest(temp->connfd);
+                        						}
+                        					}
+                        					pthread_mutex_unlock(&p2p_mutex);
+                        					continue;
+                        				}
+                        				int next_index=select_piece();
+                        				download_piece* next_d_piece;
+                        				if (next_index!=-1)
+                        					next_d_piece=init_download_piece(next_index);
+                        				else
+                        				{
+                        					pthread_mutex_lock(&first_req_mutex);
+                        					first_req=1;
+                        					pthread_mutex_unlock(&first_req_mutex);
+                        				}
+                        				pthread_mutex_lock(&p2p_mutex);
+                        				list_foreach(ptr,&p2p_cb_head)
+                        				{
+                        					p2p_cb* temp=list_entry(ptr,p2p_cb,list);
+                        					char* first_bitfield=globalInfo.bitfield;
+                        					char* second_bitfield=temp->peer_field;
+                        					if (!is_interested_bitfield(first_bitfield,second_bitfield,len)
+                        						&&temp->peer_interest==1)
+                        					{
+                        						send_not_interest(temp->connfd);
+                        						temp->peer_interest=0;
+                        					}
+                        					if (next_index==-1)
+                        					{
+                        						pthread_mutex_unlock(&p2p_mutex);
+                        						continue;
+                        					}
+                        					static int no_sub_piece=0;
+                        					if (no_sub_piece){
+                        						pthread_mutex_unlock(&p2p_mutex);
+                        						continue;
+                        					}
+                        					pthread_mutex_lock(&download_mutex);
+                        					if (next_d_piece->download_num<MAX_REQUEST
+                        						&&get_bit_at_index(second_bitfield,index)==1
+                        						&&temp->self_choke==0&&temp->peer_interest==1)
+                        					{
+                        						int begin1,length1;
+                        						if (!select_next_subpiece(next_index,begin1,length1))
+                        							no_sub_piece=1;
+                        						send_request(temp->connfd,next_index,begin1,length1);
+                        						next_d_piece->download_num++;
+                        						int subpiece_index=begin1/next_d_piece->sub_piece_size;
+                        						next_d_piece->sub_piece_state[subpiece_index]=1;
+                        					}
+                        					pthread_mutex_unlock(&download_mutex);
+                        				}
+                        				pthread_mutex_unlock(&p2p_mutex);
+                        			}
+                        			else
+                        			{
+                        				pthread_mutex_lock(&p2p_mutex);
+                        				if (newcb->peer_interest==1&&newcb->self_choke==0)
+                        				{
+                        					send_request(connfd,index,begin,length);
+                        				}
+                        			}
 				break;
 			}
 			case 8:{

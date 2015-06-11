@@ -33,7 +33,7 @@ int exist(char* filepath){
 		return 1;
 	return 0;
 }
-FILE* createfile(char* filepath){
+FILE* createfile(char* filepath,int size){
 	if (!exist(filepath))
 	{
 		printf("create %s\n",filepath);
@@ -57,7 +57,23 @@ FILE* createfile(char* filepath){
 			printf("%s\n", strerror(temp));
             			return NULL;
 		}
+		close(fd);
 	}
+	FILE* fp=fopen("filepath","r+");
+	if (fp==NULL)
+	{
+		int temp=errno;
+		printf("%s\n", strerror(temp));
+            		return NULL;
+	}
+	int nowsize=filesize(fp);
+	if (nowsize<size)
+	{
+		fseek(fp,size-1,SEEK_SET);
+		fputc(' ',fp);
+	}
+	fseek(fp,0,SEEK_SET);
+	return fp;
 }
 char* get_block(int index){
 	return NULL;

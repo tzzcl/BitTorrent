@@ -147,6 +147,16 @@ int select_piece(){//least first
 	}
 	return min_index;
 }
+int is_interested_bitfield(char *bitfield1, char *bitfield2, int len){
+    char interest_bitfield[len];
+    for(int i = 0; i < len; i++){
+        interest_bitfield[i] = (~bitfield1[i]) & bitfield2[i]; 
+    }
+    if(is_bitfield_empty(interest_bitfield,len))
+        return 0;
+    else
+        return 1;
+}
 download_piece* find_download_piece(int index){
 	ListHead* ptr;
 	pthread_mutex_lock(&download_mutex);
@@ -416,7 +426,84 @@ void* p2p_run_thread(void* param){
                                  				drop_conn(newcb);
                                  				return NULL;
 					}
+					offset--;
 				}
+				pthread_mutex_lock(&p2p_mutex);
+				memcpy(newcb->peer_field,field,len-1);
+				pthread_mutex_unlock(&p2p_mutex);
+				pthread_mutex_lock(&piece_count_mutex);
+				for(int i = 0; i < globalInfo.torrentmeta->num_pieces; i++){
+                             			if(get_bit_at_index(field,i) == 1)
+                                 				piece_counter[i] ++;
+                         			}
+				pthread_mutex_unlock(&piece_count_mutex);
+				pthread_mutex_lock(&p2p_mutex);
+				char* first_bitfield=globalInfo.bitfield;
+				char* second_bitfield=newcb->peer_field;
+				if (is_interested_bitfield(first_bitfield,second_bitfield,len))
+				{
+					send_interest(connfd);
+					newcb->peer_interest=1;
+					newcb->self_choke=0;
+					pthread_mutex_lock(&first_req_mutex);
+					if (first_req==1)
+					{
+						pthread_mutex_unlock(&first_req_mutex);
+						for (int i=0;i<globalInfo.torrentmeta->num_pieces;i++)
+						{
+							if (get_bit_at_index(first_bitfield,i)==0
+							&&get_bit_at_index(second_bitfield,i)==0
+							&&newcb->self_choke==0
+							&&newcb->peer_interest==1)
+							{
+								download_piece* d_piece=init_download_piece(i);
+								pthread_mutex_lock(&download_mutex);
+								d_piece->download_num++;
+								pthread_mutex_unlock(&download_mutex);
+								int begin,length;
+								select_next_subpiece(i,&begin,&length);
+								send_request(connfd,i,begin,length);
+								int subpiece_index=begin/d_piece->sub_piece_size;
+								d_piece->sub_piece_state[subpiece_index]=1;
+								pthread_mutex_unlock(&p2p_mutex);
+								break;
+							}
+
+						}
+					}
+					else
+					{
+						pthread_mutex_unlock(&first_req_mutex);
+						pthread_mutex_unlock(&p2p_mutex);
+						for (int i=0;i<globalInfo.torrentmeta->num_pieces;i++)
+						{
+							if (get_bit_at_index(first_bitfield,len)==0
+							&&get_bit_at_index(second_bitfield,len)==1)
+							{
+								download_piece* d_piece=find_download_piece(i);
+								if (d_piece==NULL)
+									continue;
+								pthread_mutex_lock(&download_mutex);
+								if (d_piece->download_num<MAX_REQUEST
+								&&d_piece->download_num!=0
+								&&newcb->self_choke==0
+								&&newcb->peer_interest==1)
+								{
+									int begin,length;
+									if (select_next_subpiece(i,&begin,&length))
+									{
+										send_request(connfd,i,begin,length);
+										 int subpiece_index = begin/d_piece->sub_piece_size;
+                                                 							d_piece->sub_piece_state[subpiece_index] = 1;
+									}
+								}
+								pthread_mutex_unlock(&download_mutex);
+							}
+						}
+					}
+					pthread_mutex_unlock(&first_req_mutex);
+				}
+				pthread_mutex_unlock(&p2p_mutex);
 				break;
 			}
 			case 6:{

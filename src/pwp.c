@@ -618,7 +618,7 @@ void* p2p_run_thread(void* param){
                         						&&temp->self_choke==0&&temp->peer_interest==1)
                         					{
                         						int begin1,length1;
-                        						if (!select_next_subpiece(next_index,begin1,length1))
+                        						if (!select_next_subpiece(next_index,&begin1,&length1))
                         							no_sub_piece=1;
                         						send_request(temp->connfd,next_index,begin1,length1);
                         						next_d_piece->download_num++;
@@ -635,7 +635,11 @@ void* p2p_run_thread(void* param){
                         				if (newcb->peer_interest==1&&newcb->self_choke==0)
                         				{
                         					send_request(connfd,index,begin,length);
+                        					int subpiece_index=begin/d_piece->sub_piece_size;
+                        					d_piece->sub_piece_state[subpiece_index]=1;
                         				}
+                        				pthread_mutex_unlock(&p2p_mutex);
+                        				pthread_mutex_unlock(&download_mutex);
                         			}
 				break;
 			}

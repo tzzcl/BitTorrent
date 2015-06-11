@@ -11,7 +11,7 @@
 #include "file.h"
 #include "sha1.h"
 #include "info.h"
-static char set_bit[8] = {1,2,4,8,16,32,64,128};
+static unsigned char set_bit[8] = {1,2,4,8,16,32,64,128};
 
 static inline void set_bit_at_index(char *info, int index, int bit){
     assert(bit == 0 || bit == 1);

@@ -115,6 +115,7 @@ torrentmetadata_t* parsetorrentfile(char* filename)
                         ret->filenum = 1;
                         ret->flist[0].begin_index = 0;
                         strcpy(ret->flist[0].filename, ret->name);
+						printf("%s:%s\n",__FUNCTION__,ret->name);
           }
           filled++;
         }

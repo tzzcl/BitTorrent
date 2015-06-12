@@ -215,7 +215,6 @@ char *gen_bitfield(char *piece_hash, int piece_len, int piece_num){
             g_downloaded += g_torrentmeta->piece_len;
             set_bit_at_index(bitfield, i, 1);
         } else {
-            printf("write 0\n");
             set_bit_at_index(bitfield, i, 0);
         }
         ptr++;

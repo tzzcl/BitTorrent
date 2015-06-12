@@ -10,7 +10,7 @@
 #include <arpa/inet.h>
 #include "file.h"
 #include "sha1.h"
-#include "info.h"
+#include "btdata.h"
 #define true 1
 #define false 0
 static unsigned char set_bit[8] = {1,2,4,8,16,32,64,128};

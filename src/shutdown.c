@@ -2,7 +2,7 @@
 #include "util.h"
 #include "info.h"
 extern int g_done;
-
+struct globalInfo_t globalInfo;
 // 正确的关闭客户端
 void client_shutdown(int sig)
 {

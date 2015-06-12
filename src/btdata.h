@@ -98,7 +98,7 @@ char* g_filedata;      // 文件的实际数据
 int g_filelen;
 int g_num_pieces;
 char* g_filename;
-
+char* g_bitfield;
 char g_tracker_ip[16]; // tracker的IP地址, 格式为XXX.XXX.XXX.XXX(null终止)
 int g_tracker_port;
 tracker_data *g_tracker_response;

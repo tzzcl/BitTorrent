@@ -7,14 +7,28 @@
 #include <pthread.h>
 #include <time.h>
 #include "util.h"
+#include "list.h"
 #include "btdata.h"
 #include "bencode.h"
-
+#include <pthread.h>
 //#define MAXLINE 4096 
 // pthread数据
-
+extern ListHead p2p_cb_head;
+extern ListHead download_piece_head;
+extern pthread_mutex_t p2p_mutex;
+extern pthread_mutex_t download_mutex;
+extern pthread_mutex_t first_req_mutex;
+extern pthread_mutex_t piece_count_mutex;
 void init()
 {
+  list_init(&p2p_cb_head);
+  list_init(&download_piece_head);
+  pthread_mutexattr_t mutex_attr;
+  pthread_mutexattr_settype(&mutex_attr,PTHREAD_MUTEX_RECURSIVE_NP);	
+  pthread_mutex_init(&p2p_mutex,&mutex_attr);
+  pthread_mutex_init(&download_mutex,&mutex_attr);
+  pthread_mutex_init(&first_req_mutex,&mutex_attr);
+  pthread_mutex_init(&piece_count_mutex,&mutex_attr);
   g_done = 0;
   g_tracker_response = NULL;
 }

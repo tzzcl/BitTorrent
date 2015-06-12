@@ -86,26 +86,26 @@ typedef struct _peer_t {
 /**************************************
  * 全局变量 
 **************************************/
-char g_my_ip[128]; // 格式为XXX.XXX.XXX.XXX, null终止
-int g_peerport; // peer监听的端口号
-int g_infohash[5]; // 要共享或要下载的文件的SHA1哈希值, 每个客户端同时只能处理一个文件
-char g_my_id[20];
+extern char g_my_ip[128]; // 格式为XXX.XXX.XXX.XXX, null终止
+extern int g_peerport; // peer监听的端口号
+extern int g_infohash[5]; // 要共享或要下载的文件的SHA1哈希值, 每个客户端同时只能处理一个文件
+extern char g_my_id[20];
 
-int g_done; // 表明程序是否应该终止
+extern int g_done; // 表明程序是否应该终止
 
-torrentmetadata_t* g_torrentmeta;
-char* g_filedata;      // 文件的实际数据
-int g_filelen;
-int g_num_pieces;
-char* g_filename;
-char* g_bitfield;
-char g_tracker_ip[16]; // tracker的IP地址, 格式为XXX.XXX.XXX.XXX(null终止)
-int g_tracker_port;
-tracker_data *g_tracker_response;
+extern torrentmetadata_t* g_torrentmeta;
+extern char* g_filedata;      // 文件的实际数据
+extern int g_filelen;
+extern int g_num_pieces;
+extern char* g_filename;
+extern char* g_bitfield;
+extern char g_tracker_ip[16]; // tracker的IP地址, 格式为XXX.XXX.XXX.XXX(null终止)
+extern int g_tracker_port;
+extern tracker_data *g_tracker_response;
 
 // 这些变量用在函数make_tracker_request中, 它们需要在客户端执行过程中不断更新.
-int g_uploaded;
-int g_downloaded;
-int g_left;
+extern int g_uploaded;
+extern int g_downloaded;
+extern int g_left;
 
 #endif

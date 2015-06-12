@@ -248,7 +248,22 @@ int main(int argc, char **argv)
       printf("Peer ip: %s\n",g_tracker_response->peers[i].ip);
       printf("Peer port: %d\n",g_tracker_response->peers[i].port);
     }
-  
+    for (i = 0; i <g_tracker_response->numpeers; i++){
+            if (!valid_ip(g_tracker_response->peers[i].ip)){
+                pthread_t tid;
+                p2p_thread *param = (p2p_thread *)malloc(sizeof(p2p_thread));
+                param->is_connect = 1;
+                param->port = g_tracker_response->peers[i].port;
+                strcpy(param->ip,g_tracker_response->peers[i].ip);
+                if (pthread_create(&tid, NULL, p2p_run_thread, param) != 0){
+                    printf("Error when create thread to connect peer\n");
+                } else {
+                    printf("Success create thread to connect peer %s\n", g_tracker_response->peers[i].ip);
+                }
+            }
+        }
+
+        printf("sleep %d seconds\n", g_tracker_response->interval);
     // 必须等待td->interval秒, 然后再发出下一个GET请求
     sleep(g_tracker_response->interval);
 

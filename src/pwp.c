@@ -1,7 +1,6 @@
 #include "pwp.h"
 #include "file.h"
 #include "util.h"
-#include "info.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

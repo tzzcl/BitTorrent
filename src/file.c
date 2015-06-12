@@ -184,4 +184,42 @@ void get_block(int index, int begin, int length, char *block){
 void set_block(int index, int begin, int length, char *block){
     list_set_piece(globalInfo.torrentmeta->flist, globalInfo.torrentmeta->filenum, block, length, index * globalInfo.torrentmeta->piece_len + begin);
 }
+char *gen_bitfield(char *piece_hash, int piece_len, int piece_num){
+    struct fileinfo_t *filelist = globalInfo.torrentmeta->flist;
+    int filenum = globalInfo.torrentmeta->filenum;
+    int cursize = filelist[filenum - 1].begin_index + filelist[filenum - 1].size;
+    char *bitfield = (char *)malloc(piece_num / 8 + 1);
+    memset(bitfield, 0, piece_num / 8 + 1);
+    char *hashbuf = (char *)malloc(piece_len);
+    typedef struct {int hash[5];} *hashptr_t;
+    hashptr_t ptr = (hashptr_t) piece_hash;
+    int i;
+    for (i = 0; i < piece_num; i++){
+        int blocksize = (i != piece_num - 1)?piece_len:(cursize - (piece_num - 1) * piece_len);
+        list_get_piece(filelist, filenum, hashbuf, blocksize, piece_len * i);
+        SHA1Context sha;
+        SHA1Reset(&sha);
+        SHA1Input(&sha, (const unsigned char*)hashbuf, blocksize);
+        if(!SHA1Result(&sha))
+        {
+            printf("FAILURE in count sha when generate bitfield\n");
+            assert(false);
+        }
+        int j;
+        for (j = 0; j < 5; j++){
+            sha.Message_Digest[j] = htonl(sha.Message_Digest[j]);
+        }
+        if (memcmp(sha.Message_Digest, ptr->hash, 20) == 0){
+            printf("write 1\n");
+            globalInfo.downloaded += globalInfo.torrentmeta->piece_len;
+            set_bit_at_index(bitfield, i, 1);
+        } else {
+            printf("write 0\n");
+            set_bit_at_index(bitfield, i, 0);
+        }
+        ptr++;
+    }
 
+    free(hashbuf);
+    return bitfield;
+}

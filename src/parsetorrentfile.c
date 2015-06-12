@@ -115,7 +115,6 @@ torrentmetadata_t* parsetorrentfile(char* filename)
           int l=be_str_len(idict[j].val);
 		  int temp=l-1;
 		  puts(idict[j].val->val.s);
-		  printf("%d\n",temp);
 		  for (;idict[j].val->val.s[temp]!='/';temp--);
 		  strcpy(ret->name,name);
           memcpy(ret->name+strlen(name),idict[j].val->val.s+temp,l-temp);
@@ -180,7 +179,7 @@ torrentmetadata_t* parsetorrentfile(char* filename)
   // 确认已填充了必要的字段
   
   be_free(ben_res);  
- 
+  printf("%d %d %d\n",g_torrentmeta->pieces,g_torrentmeta->piece_len, g_torrentmeta->num_pieces);
   if(filled < 5)
   {
     printf("Did not fill necessary field\n");

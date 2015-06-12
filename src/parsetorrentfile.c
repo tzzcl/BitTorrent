@@ -110,6 +110,7 @@ torrentmetadata_t* parsetorrentfile(char* filename)
         if(!strncmp(idict[j].key,"name",strlen("name")))
         {
           ret->name = (char*)malloc(strlen(idict[j].val->val.s)*sizeof(char));
+		  memset(ret->name,0,sizeof(char)*strlen(idict[j].val->val.s)*sizeof(char));
           char * name="/home/tzzcl";
           int l=be_str_len(idict[j].val);
 		  int temp=l-1;

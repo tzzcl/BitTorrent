@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 
   g_filelen = g_torrentmeta->length;
   g_num_pieces = g_torrentmeta->num_pieces;
-  printf("%d %d %d\n",g_torrentmeta->pieces,g_torrentmeta->piece_len, g_torrentmeta->num_pieces);
+  
   for (i = 0; i <g_torrentmeta->filenum; i++){
         g_torrentmeta->flist[i].fp = createfile(g_torrentmeta->flist[i].filename, g_torrentmeta->flist[i].size);
     }

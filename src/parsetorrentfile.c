@@ -179,7 +179,7 @@ torrentmetadata_t* parsetorrentfile(char* filename)
   // 确认已填充了必要的字段
   
   be_free(ben_res);  
-  
+  printf("%d %d %d\n",ret->pieces,ret->piece_len, ret->num_pieces);
   if(filled < 5)
   {
     printf("Did not fill necessary field\n");

@@ -6,7 +6,27 @@
 #include <string.h>
 
 #include "util.h"
+char g_my_ip[128]; // 格式为XXX.XXX.XXX.XXX, null终止
+int g_peerport; // peer监听的端口号
+int g_infohash[5]; // 要共享或要下载的文件的SHA1哈希值, 每个客户端同时只能处理一个文件
+char g_my_id[20];
 
+int g_done; // 表明程序是否应该终止
+
+torrentmetadata_t* g_torrentmeta;
+char* g_filedata;      // 文件的实际数据
+int g_filelen;
+int g_num_pieces;
+char* g_filename;
+char* g_bitfield;
+char g_tracker_ip[16]; // tracker的IP地址, 格式为XXX.XXX.XXX.XXX(null终止)
+int g_tracker_port;
+tracker_data *g_tracker_response;
+
+// 这些变量用在函数make_tracker_request中, 它们需要在客户端执行过程中不断更新.
+int g_uploaded;
+int g_downloaded;
+int g_left;
 int connect_to_host(char* ip, int port)
 {
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);

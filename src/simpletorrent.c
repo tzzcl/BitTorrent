@@ -84,6 +84,7 @@ int main(int argc, char **argv)
   for (i = 0; i <g_torrentmeta->filenum; i++){
         g_torrentmeta->flist[i].fp = createfile(g_torrentmeta->flist[i].filename, g_torrentmeta->flist[i].size);
     }
+  printf("%d %d %d\n",g_torrentmeta->pieces,g_torrentmeta->piece_len, g_torrentmeta->num_pieces);
    g_bitfield = gen_bitfield(g_torrentmeta->pieces,g_torrentmeta->piece_len, g_torrentmeta->num_pieces);
   g_filedata = (char*)malloc(g_filelen*sizeof(char));
   announce_url_t* announce_info;

@@ -6,9 +6,11 @@
 #include <signal.h>
 #include <pthread.h>
 #include <time.h>
+#include <errno.h>
 #include "util.h"
 #include "list.h"
 #include "btdata.h"
+#include "pwp.h"
 #include "bencode.h"
 #include <pthread.h>
 #define DEBUG(x) x
@@ -20,6 +22,8 @@ extern pthread_mutex_t p2p_mutex;
 extern pthread_mutex_t download_mutex;
 extern pthread_mutex_t first_req_mutex;
 extern pthread_mutex_t piece_count_mutex;
+extern int* piece_counter;
+int listenfd;
 void init()
 {
   list_init(&p2p_cb_head);
@@ -33,7 +37,53 @@ void init()
   g_done = 0;
   g_tracker_response = NULL;
 }
+void *show_speed(void *arg){
+    int old_download = g_downloaded;
+    char bar[] = "=================================================>";
+    for(;;){
+        sleep(2);
+        int current_download = g_downloaded;
+        double speed = (double)(current_download - old_download)/3.0;
+        double proportion = (double)current_download/(double)g_torrentmeta->length;
+        int index = (proportion >= 1)?0:(49 - (int)(proportion * 50));
+        printf("speed:%5.1fKB/s [%-50s]\r", speed / 1024, &bar[index]);
+        old_download = current_download;
+        fflush(stdout);
+    }
+}
 
+void *daemon_listen(void *arg){
+    int sockfd = (int)arg;
+
+    printf("daemon is running\n");
+    for(;;){
+        struct sockaddr_in cliaddr;
+        socklen_t cliaddr_len;
+        cliaddr_len = sizeof(struct sockaddr_in);
+
+        pthread_testcancel();
+
+        int connfd = accept(sockfd, (struct sockaddr *)&cliaddr, &cliaddr_len);
+        if (connfd < 0){
+            int tmp = errno;
+            printf("Error when accept socket:%s\n", strerror(tmp));
+            continue;
+        }
+        printf("receive a connect from %s\n", inet_ntoa(cliaddr.sin_addr));
+        pthread_t tid;
+        p2p_thread *param = (p2p_thread *)malloc(sizeof(p2p_thread));
+        param->connfd = connfd;
+        param->is_connect = 0;
+        strcpy(param->ip, inet_ntoa(cliaddr.sin_addr));
+        if (pthread_create(&tid, NULL, p2p_run_thread, param) != 0){
+            printf("Error when create thread accept request\n");
+        } else {
+            printf("Success create thread to accept request\n");
+        }
+    }
+
+    return NULL;
+}
 int main(int argc, char **argv) 
 {
   int sockfd = -1;
@@ -87,6 +137,8 @@ int main(int argc, char **argv)
     }
    g_bitfield = gen_bitfield(g_torrentmeta->pieces,g_torrentmeta->piece_len, g_torrentmeta->num_pieces);
   g_filedata = (char*)malloc(g_filelen*sizeof(char));
+  piece_counter = (int *)malloc(sizeof(int)*g_torrentmeta->num_pieces);
+  memset(piece_counter,0,sizeof(int)*g_torrentmeta->num_pieces);
   announce_url_t* announce_info;
   announce_info = parse_announce_url(g_torrentmeta->announce);
   // 提取tracker url中的IP地址
@@ -106,7 +158,24 @@ int main(int argc, char **argv)
 
   free(announce_info);
   announce_info = NULL;
-
+  listenfd=make_listen_port(g_peerport);
+  if (listenfd==0)
+  {
+    printf("Error when create socket for binding:%s\n", strerror(errno));
+    exit(-1);
+  }
+  pthread_t p_daemon;
+  if (pthread_create(&p_daemon, NULL, daemon_listen, (void *)listenfd) != 0){
+        int tmp = errno;
+        printf("Error when create daemon thread: %s\n", strerror(tmp));
+        return -1;
+  }
+  pthread_t p_speed;
+  if (pthread_create(&p_speed, NULL, show_speed, NULL) != 0){
+        int tmp = errno;
+        printf("Error when create show_speed thread: %s\n", strerror(tmp));
+        return -1;
+  }
   // 初始化
   // 设置信号句柄
   signal(SIGINT,client_shutdown);

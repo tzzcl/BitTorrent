@@ -178,7 +178,7 @@ torrentmetadata_t* parsetorrentfile(char* filename)
         num_pieces++;
     ret->num_pieces = num_pieces;
   // 确认已填充了必要的字段
-  DEBUG(printf("%s:len:%d %d %d %d\n",__FUNCTION__,ret->length,ret->num_pieces,strlen(ret->pieces),ret->piece_len);)
+  DEBUG(printf("%s:len:%d %d %d\n",__FUNCTION__,ret->length,ret->num_pieces,ret->piece_len);)
   be_free(ben_res);  
   if(filled < 5)
   {

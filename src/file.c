@@ -11,6 +11,8 @@
 #include "file.h"
 #include "sha1.h"
 #include "info.h"
+#define true 1
+#define false 0
 static unsigned char set_bit[8] = {1,2,4,8,16,32,64,128};
 
 static inline void set_bit_at_index(char *info, int index, int bit){
@@ -75,9 +77,111 @@ FILE* createfile(char* filepath,int size){
 	fseek(fp,0,SEEK_SET);
 	return fp;
 }
-char* get_block(int index){
-	return NULL;
+int get_piece(FILE* fp,char* buf,int piece_num,int piece_size){
+	int cursize=filesize(fp);
+	if (cursize<=piece_num*piece_size)
+	{
+		puts("read unexist piece");
+		return -1;
+	}
+	if (cursize<(piece_num+1)*piece_size)
+	{
+		fseek(fp,piece_num*piece_size,SEEK_SET);
+		return fread(buf,sizeof(char),cursize-(piece_num*piece_size),fp);
+	}
+	fseek(fp,piece_size*piece_num,SEEK_SET);
+	return fread(buf,sizeof(char),piece_size,fp);
 }
-void set_block(int index,int begin,int length,char* block){
+int store_piece(FILE* fp,char* buf,int piece_num,int piece_size){
+	int cursize = filesize(fp);
+	if (cursize <= piece_num * piece_size){
+		puts("write unexist piece");
+		return -1;
+	 }
+	if (cursize < (piece_num + 1) * piece_size){
+		fseek(fp, piece_num * piece_size, SEEK_SET);
+		return fwrite(buf, sizeof(char), cursize - (piece_num * piece_size), fp);
+	}
+	fseek(fp, piece_num * piece_size, SEEK_SET);
+	return fwrite(buf, sizeof(char), piece_size, fp);
+}
+int get_sub_piece(FILE *fp, char *buf, int begin, int len, int piece_num, int piece_size){
+    int cursize = filesize(fp);
+    if (cursize < piece_num * piece_size + len){
+        printf("read sub piece beyond file size\n");
+        return -1;
+    }
+    fseek(fp, piece_num * piece_size + begin, SEEK_SET);
+    return fread(buf, sizeof(char), len, fp);
+}
 
+// write sub piece to file
+int store_sub_piece(FILE *fp, char *buf, int begin, int len, int piece_num, int piece_size){
+    int cursize = filesize(fp);
+    if (cursize < piece_num * piece_size + len){
+        printf("write sub piece beyond file size\n");
+        return -1;
+    }
+    fseek(fp, piece_num * piece_size + begin, SEEK_SET);
+    return fwrite(buf, sizeof(char), len, fp);
 }
+
+int list_set_piece(struct fileinfo_t *fileinfo, int filenum, char *buf, int len, int begin){
+    if (fileinfo[filenum - 1].begin_index + fileinfo[filenum - 1].size < begin + len){
+        printf("write beyond file list\n");
+        return -1;
+    }
+    int i;
+    for (i = 0; i < filenum; i++){
+        if (fileinfo[i].begin_index <= begin && fileinfo[i].begin_index + fileinfo[i].size > begin){
+            // write to a file
+            if (fileinfo[i].begin_index + fileinfo[i].size - begin - len >= 0){
+                fseek(fileinfo[i].fp, begin - fileinfo[i].begin_index, SEEK_SET);
+                return fwrite(buf, sizeof(char), len, fileinfo[i].fp);
+            } else {
+            // write to multi file
+                int writesize = fileinfo[i].begin_index + fileinfo[i].size - begin;
+                fseek(fileinfo[i].fp, begin - fileinfo[i].begin_index, SEEK_SET);
+                int partsize = fwrite(buf, sizeof(char), writesize, fileinfo[i].fp);
+                return partsize + list_set_piece(fileinfo, filenum, buf + writesize, len - writesize, begin + writesize);
+            }
+        }
+    }
+    assert(false && "if argu pass the first if stmt, it shouldn't access here");
+    return -1;
+}
+
+int list_get_piece(struct fileinfo_t *fileinfo, int filenum, char *buf, int len, int begin){
+    if (fileinfo[filenum - 1].begin_index + fileinfo[filenum - 1].size < begin + len){
+        printf("write beyond file list\n");
+        return -1;
+    }
+    int i;
+    for (i = 0; i < filenum; i++){
+        if (fileinfo[i].begin_index <= begin && fileinfo[i].begin_index + fileinfo[i].size > begin){
+            // write to a file
+            if (fileinfo[i].begin_index + fileinfo[i].size - begin - len >= 0){
+                fseek(fileinfo[i].fp, begin - fileinfo[i].begin_index, SEEK_SET);
+                return fread(buf, sizeof(char), len, fileinfo[i].fp);
+            } else {
+            // write to multi file
+                int writesize = fileinfo[i].begin_index + fileinfo[i].size - begin;
+                fseek(fileinfo[i].fp, begin - fileinfo[i].begin_index, SEEK_SET);
+                int partsize = fread(buf, sizeof(char), writesize, fileinfo[i].fp);
+                return partsize + list_get_piece(fileinfo, filenum, buf + writesize, len - writesize, begin + writesize);
+            }
+        }
+    }
+    assert(false && "if argu pass the first if stmt, it shouldn't access here");
+    return -1;
+}
+
+
+
+void get_block(int index, int begin, int length, char *block){
+    list_get_piece(globalInfo.torrentmeta->flist, globalInfo.torrentmeta->filenum, block, length, index * globalInfo.torrentmeta->piece_len + begin);
+}
+void set_block(int index, int begin, int length, char *block){
+    list_set_piece(globalInfo.torrentmeta->flist, globalInfo.torrentmeta->filenum, block, length, index * globalInfo.torrentmeta->piece_len + begin);
+}
+

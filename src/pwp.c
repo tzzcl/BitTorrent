@@ -710,7 +710,8 @@ void send_msg(int connfd){
     	send(connfd,msg,5,0);
 }
 void send_piece(int connfd,int index,int begin,int length){
-	char* block=get_block(index);
+	char block[length];
+	get_block(index,begin,length,block);
 	char msg[13];
 	*(int*)msg = htonl(9+length);
 	msg[4] = 7;

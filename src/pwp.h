@@ -40,5 +40,5 @@ typedef struct download_piece{
 }download_piece;
 
 
-
+void* p2p_run_thread(void* param);
 #endif

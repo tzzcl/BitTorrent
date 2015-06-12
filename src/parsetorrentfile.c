@@ -115,7 +115,7 @@ torrentmetadata_t* parsetorrentfile(char* filename)
 		  int temp=l-1;
 		  puts(idict[j].val->val.s);
 		  printf("%d\n",temp);
-		  for (;idict[j].val->val.s[temp]!='\/';temp--);
+		  for (;idict[j].val->val.s[temp]!='/';temp--);
 		  strcpy(ret->name,name);
           memcpy(ret->name+strlen(name),idict[j].val->val.s+temp,l-temp);
 	      if (multifile == 0){

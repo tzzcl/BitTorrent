@@ -21,8 +21,6 @@ pthread_mutex_t p2p_mutex;
 pthread_mutex_t download_mutex;
 pthread_mutex_t first_req_mutex;
 pthread_mutex_t piece_count_mutex;
-struct globalArgs_t globalArgs;
-struct globalInfo_t globalInfo;
 int listenfd;
 static unsigned char set_bit[8] = {1,2,4,8,16,32,64,128};
 static int readn(int fd,void* content,size_t len)
@@ -92,7 +90,7 @@ int listen_init(){
 	return listenfd;
 }
 static inline int is_bitfield_complete(char *bitfield){
-    for(int i = 0; i < globalInfo.torrentmeta->num_pieces; i++){
+    for(int i = 0; i < g_torrentmeta->num_pieces; i++){
         if(get_bit_at_index(bitfield,i) != 1)
             return 0;
     }
@@ -109,9 +107,9 @@ static inline int is_bitfield_empty(char *bitfield,int len){
     return flag;
 }
 static int real_piece_len(int index){
-	int piece_num = globalInfo.torrentmeta->num_pieces;
-    	int piece_len = globalInfo.torrentmeta->piece_len;
-    	int total_len = globalInfo.torrentmeta->length;
+	int piece_num = g_torrentmeta->num_pieces;
+    	int piece_len = g_torrentmeta->piece_len;
+    	int total_len = g_torrentmeta->length;
     	int real_piece_len = (index == piece_num-1)?(total_len - index * piece_len):(piece_len);
     	return real_piece_len;
 }
@@ -141,9 +139,9 @@ p2p_cb* new_init_p2p(){
 }
 int select_piece(){//least first
 	int min_index=-1,min_val=1e8;
-	for (int i=0;i<globalInfo.torrentmeta->num_pieces;i++)
+	for (int i=0;i<g_torrentmeta->num_pieces;i++)
 	{
-		if (get_bit_at_index(globalInfo.bitfield,i)==0)
+		if (get_bit_at_index(g_bitfield,i)==0)
 		{
 			if (piece_counter[i]!=0&&piece_counter[i]<min_val){
 				min_val=piece_counter[i];
@@ -225,7 +223,7 @@ int select_next_subpiece(int index,int* begin,int* length){
 				if (d_piece->sub_piece_state[i]==1)
 				{
 					*begin=i*d_piece->sub_piece_size;
-					int rest=globalInfo.torrentmeta->piece_len%d_piece->sub_piece_size;
+					int rest=g_torrentmeta->piece_len%d_piece->sub_piece_size;
 					if (i==d_piece->sub_piece_num-1&&rest!=0)
 					{
 						*length = rest;
@@ -265,7 +263,7 @@ void* p2p_run_thread(void* param){
 	newcb->connfd=connfd;
 	strcpy(newcb->peer_ip,current->ip);
 	safe_free(current);
-	int bit=globalInfo.torrentmeta->num_pieces/8+(globalInfo.torrentmeta->num_pieces%8>0);
+	int bit=g_torrentmeta->num_pieces/8+(g_torrentmeta->num_pieces%8>0);
 	newcb->peer_field=(char*)malloc(bit);
 	memset(newcb->peer_field,0,bit);
 	pthread_mutex_lock(&p2p_mutex);
@@ -289,7 +287,7 @@ void* p2p_run_thread(void* param){
 		for (int i=0;i<5;i++)
 			info_hash[i]=ntohl(info_hash[i]);
 		readn(connfd,peer_id,20);
-		if (memcmp(info_hash,globalInfo.torrentmeta->info_hash,20)!=0)
+		if (memcmp(info_hash,g_torrentmeta->info_hash,20)!=0)
 		{
 			puts("wrong hash message");
 			drop_conn(newcb);
@@ -304,11 +302,11 @@ void* p2p_run_thread(void* param){
 			}
 		}
 	}
-	if (!is_bitfield_empty(globalInfo.bitfield,bit)){
+	if (!is_bitfield_empty(g_bitfield,bit)){
 		char msg[5+bit];
         		*(int*)msg= htonl(1+bit);
        		msg[4] = 5;
-        		memcpy(msg+5,globalInfo.bitfield,bit);
+        		memcpy(msg+5,g_bitfield,bit);
         		if (send(connfd,msg,5+bit,0) == -1){
             		printf("Error when send: %s", strerror(errno));
             		drop_conn(newcb);
@@ -365,7 +363,7 @@ void* p2p_run_thread(void* param){
 				pthread_mutex_lock(&piece_count_mutex);
 				piece_counter[index]++;
 				pthread_mutex_unlock(&piece_count_mutex);
-				if (get_bit_at_index(globalInfo.bitfield,index)==0){//send interest
+				if (get_bit_at_index(g_bitfield,index)==0){//send interest
 					send_interest(connfd);
 					pthread_mutex_lock(&p2p_mutex);
 					newcb->peer_interest=1;
@@ -423,7 +421,7 @@ void* p2p_run_thread(void* param){
 					return NULL;
 				}
 				unsigned char ch=field[len-2];
-				int offset = 8 - globalInfo.torrentmeta->num_pieces%8;
+				int offset = 8 - g_torrentmeta->num_pieces%8;
 				while (offset>=1&&offset<8)
 				{
 					if ((ch>>(offset-1))&1)
@@ -438,13 +436,13 @@ void* p2p_run_thread(void* param){
 				memcpy(newcb->peer_field,field,len-1);
 				pthread_mutex_unlock(&p2p_mutex);
 				pthread_mutex_lock(&piece_count_mutex);
-				for(int i = 0; i < globalInfo.torrentmeta->num_pieces; i++){
+				for(int i = 0; i < g_torrentmeta->num_pieces; i++){
                              			if(get_bit_at_index(field,i) == 1)
                                  				piece_counter[i] ++;
                          			}
 				pthread_mutex_unlock(&piece_count_mutex);
 				pthread_mutex_lock(&p2p_mutex);
-				char* first_bitfield=globalInfo.bitfield;
+				char* first_bitfield=g_bitfield;
 				char* second_bitfield=newcb->peer_field;
 				if (is_interested_bitfield(first_bitfield,second_bitfield,len))
 				{
@@ -455,7 +453,7 @@ void* p2p_run_thread(void* param){
 					if (first_req==1)
 					{
 						pthread_mutex_unlock(&first_req_mutex);
-						for (int i=0;i<globalInfo.torrentmeta->num_pieces;i++)
+						for (int i=0;i<g_torrentmeta->num_pieces;i++)
 						{
 							if (get_bit_at_index(first_bitfield,i)==0
 							&&get_bit_at_index(second_bitfield,i)==0
@@ -481,7 +479,7 @@ void* p2p_run_thread(void* param){
 					{
 						pthread_mutex_unlock(&first_req_mutex);
 						pthread_mutex_unlock(&p2p_mutex);
-						for (int i=0;i<globalInfo.torrentmeta->num_pieces;i++)
+						for (int i=0;i<g_torrentmeta->num_pieces;i++)
 						{
 							if (get_bit_at_index(first_bitfield,len)==0
 							&&get_bit_at_index(second_bitfield,len)==1)
@@ -545,13 +543,13 @@ void* p2p_run_thread(void* param){
                         			if (d_piece==NULL) continue;
                         			pthread_mutex_lock(&download_mutex);
                         			set_block(index,begin,length,payload+8);
-                        			globalInfo.downloaded+=length;
+                        			g_downloaded+=length;
                         			int subpiece_index=begin/d_piece->sub_piece_size;
                         			d_piece->sub_piece_state[subpiece_index]=2;
                         			if (!select_next_subpiece(index,&begin,&length))
                         			{
                         				printf("piece %d has been dowmloaded successfully\n",index);
-                        				set_bit_at_index(globalInfo.bitfield,index,1);
+                        				set_bit_at_index(g_bitfield,index,1);
                         				list_del(&d_piece->list);
                         				safe_free(d_piece->sub_piece_state);
                         				safe_free(d_piece);
@@ -563,7 +561,7 @@ void* p2p_run_thread(void* param){
                         					send_have(tempp2p->connfd,index);
                         				}
                         				pthread_mutex_unlock(&p2p_mutex);
-                        				if (is_bitfield_complete(globalInfo.bitfield))
+                        				if (is_bitfield_complete(g_bitfield))
                         				{
                         					puts("File Download Complete!");
                         					ListHead* ptr;
@@ -594,7 +592,7 @@ void* p2p_run_thread(void* param){
                         				list_foreach(ptr,&p2p_cb_head)
                         				{
                         					p2p_cb* temp=list_entry(ptr,p2p_cb,list);
-                        					char* first_bitfield=globalInfo.bitfield;
+                        					char* first_bitfield=g_bitfield;
                         					char* second_bitfield=temp->peer_field;
                         					if (!is_interested_bitfield(first_bitfield,second_bitfield,len)
                         						&&temp->peer_interest==1)
@@ -649,7 +647,7 @@ void* p2p_run_thread(void* param){
 		}
 	}
 	pthread_mutex_lock(&piece_count_mutex);
-    	for(int i = 0; i < globalInfo.torrentmeta->num_pieces; i++){
+    	for(int i = 0; i < g_torrentmeta->num_pieces; i++){
         	if(get_bit_at_index(newcb->peer_field,i) == 1)
             		piece_counter[i] --;
     	}

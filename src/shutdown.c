@@ -17,10 +17,11 @@ void client_shutdown(int sig)
     free(request);
     close(sockfd);
     close(g_peerport);
-	puts("AAA");
+	
     int i;
     for (i = 0; i < globalInfo.torrentmeta->filenum; i++){
-        fclose(globalInfo.torrentmeta->flist[i].fp);
+		if (globalInfo.torrentmeta->flist[i].fp!=NULL)
+        	fclose(globalInfo.torrentmeta->flist[i].fp);
     }
     sleep(1);
     exit(0);

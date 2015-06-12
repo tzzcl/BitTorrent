@@ -70,7 +70,7 @@ int main(int argc, char **argv)
     val[i] = rand();
   }
   memcpy(g_my_id,(char*)val,20);
-  DEBUG(for (int i=0;i<20;i++) printf("%02X ",g_my_id[i]);puts("");)
+  DEBUG(for (int i=0;i<20;i++) printf("%02X ",(unsigned char)g_my_id[i]);puts("");)
   strncpy(g_my_ip,argv[2],strlen(argv[2]));
   g_my_ip[strlen(argv[2])+1] = '\0';
   

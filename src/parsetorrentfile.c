@@ -92,17 +92,30 @@ torrentmetadata_t* parsetorrentfile(char* filename)
       }
       idict = ben_res->val.d[i].val->val.d;
       // 检查这个字典的键
+	  int multifile=0;
+	  for (j = 0; idict[j].key != NULL; j++){
+                if (!strcmp(idict[j].key, "files")){
+                    multifile = 1;
+                    filled++;
+                }
+            }
       for(j=0; idict[j].key != NULL; j++)
       { 
         if(!strncmp(idict[j].key,"length",strlen("length")))
         {
           ret->length = idict[j].val->val.i;
+		  ret->flist[0].size = ret->length;
           filled++;
         }
         if(!strncmp(idict[j].key,"name",strlen("name")))
         {
           ret->name = (char*)malloc(strlen(idict[j].val->val.s)*sizeof(char));
           memcpy(ret->name,idict[j].val->val.s,strlen(idict[j].val->val.s));
+	      if (multifile == 0){
+                        ret->filenum = 1;
+                        ret->flist[0].begin_index = 0;
+                        strcpy(ret->flist[0].filename, ret->name);
+          }
           filled++;
         }
         if(!strncmp(idict[j].key,"piece length",strlen("piece length")))

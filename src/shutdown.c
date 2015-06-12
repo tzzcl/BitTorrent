@@ -19,6 +19,7 @@ void client_shutdown(int sig)
     close(g_peerport);
 	
     int i;
+	printf("%d\n",globalInfo.torrentmeta->filenum);
     for (i = 0; i < globalInfo.torrentmeta->filenum; i++){
 		if (globalInfo.torrentmeta->flist[i].fp!=NULL)
         	fclose(globalInfo.torrentmeta->flist[i].fp);

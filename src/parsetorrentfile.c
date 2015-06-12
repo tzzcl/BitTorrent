@@ -3,6 +3,7 @@
 #include "util.h"
 #include "sha1.h"
 #include <assert.h>
+#define DEBUG(x) x
 // 注意: 这个函数只能处理单文件模式torrent
 torrentmetadata_t* parsetorrentfile(char* filename)
 {
@@ -177,9 +178,8 @@ torrentmetadata_t* parsetorrentfile(char* filename)
         num_pieces++;
     ret->num_pieces = num_pieces;
   // 确认已填充了必要的字段
-  
+  DEBUG(printf("%s:len:%d%d %d %d\n",ret->length,ret->num_pieces,ret->pieces,ret->piece_len);)
   be_free(ben_res);  
-  printf("%d %d %d\n",ret->pieces,ret->piece_len, ret->num_pieces);
   if(filled < 5)
   {
     printf("Did not fill necessary field\n");

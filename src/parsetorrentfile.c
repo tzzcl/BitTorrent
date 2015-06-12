@@ -117,7 +117,6 @@ torrentmetadata_t* parsetorrentfile(char* filename)
                         strcpy(ret->flist[0].filename, ret->name);
 						
           }
-		  printf("%s:%s\n",__FUNCTION__,ret->name);
           filled++;
         }
         if(!strncmp(idict[j].key,"piece length",strlen("piece length")))
@@ -140,6 +139,7 @@ torrentmetadata_t* parsetorrentfile(char* filename)
       for (j = 0; idict[j].key != NULL; j++){
                 if (!strcmp(idict[j].key, "files")){
                     assert(idict[j].val->type == BE_LIST);
+					puts("AAA");
                     int k;
                     for(k = 0; idict[j].val->val.l[k] != NULL; k++){
                         struct be_dict *filedict = idict[j].val->val.l[k]->val.d;

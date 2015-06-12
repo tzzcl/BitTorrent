@@ -196,8 +196,9 @@ char *gen_bitfield(char *piece_hash, int piece_len, int piece_num){
     int i;
     for (i = 0; i < piece_num; i++){
         int blocksize = (i != piece_num - 1)?piece_len:(cursize - (piece_num - 1) * piece_len);
-        puts("AAA");
+
         list_get_piece(filelist, filenum, hashbuf, blocksize, piece_len * i);
+        puts("AAA");
         SHA1Context sha;
         SHA1Reset(&sha);
         SHA1Input(&sha, (const unsigned char*)hashbuf, blocksize);

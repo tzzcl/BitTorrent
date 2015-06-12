@@ -191,12 +191,12 @@ char *gen_bitfield(char *piece_hash, int piece_len, int piece_num){
     char *bitfield = (char *)malloc(piece_num / 8 + 1);
     memset(bitfield, 0, piece_num / 8 + 1);
     char *hashbuf = (char *)malloc(piece_len);
-    puts("AAA");
     typedef struct {int hash[5];} *hashptr_t;
     hashptr_t ptr = (hashptr_t) piece_hash;
     int i;
     for (i = 0; i < piece_num; i++){
         int blocksize = (i != piece_num - 1)?piece_len:(cursize - (piece_num - 1) * piece_len);
+        puts("AAA");
         list_get_piece(filelist, filenum, hashbuf, blocksize, piece_len * i);
         SHA1Context sha;
         SHA1Reset(&sha);

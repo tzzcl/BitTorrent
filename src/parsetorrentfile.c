@@ -2,7 +2,7 @@
 #include "bencode.h"
 #include "util.h"
 #include "sha1.h"
-
+#include <assert.h>
 // 注意: 这个函数只能处理单文件模式torrent
 torrentmetadata_t* parsetorrentfile(char* filename)
 {
@@ -122,9 +122,39 @@ torrentmetadata_t* parsetorrentfile(char* filename)
         }
 
       } // for循环结束
+      for (j = 0; idict[j].key != NULL; j++){
+                if (!strcmp(idict[j].key, "files")){
+                    assert(idict[j].val->type == BE_LIST);
+                    int k;
+                    for(k = 0; idict[j].val->val.l[k] != NULL; k++){
+                        struct be_dict *filedict = idict[j].val->val.l[k]->val.d;
+                        ret->filenum = k + 1;
+                        int x;
+                        for(x = 0; filedict[x].key != NULL; x++){
+                            if (!strcmp(filedict[x].key, "length")){
+                                ret->flist[k].size = filedict[x].val->val.i;
+                                ret->flist[k].begin_index = (k == 0)?0:ret->flist[k - 1].begin_index + ret->flist[k - 1].size;
+                                ret->length = ret->flist[k].size + ret->flist[k].begin_index;
+                            }
+                            if (!strcmp(filedict[x].key, "path")){
+                                strcpy(ret->flist[k].filename, ret->name);
+                                struct be_node **pathlist = filedict[x].val->val.l;
+                                while(*pathlist != NULL){
+                                    strcat(ret->flist[k].filename, "/");
+                                    strcat(ret->flist[k].filename, (*pathlist)->val.s);
+                                    pathlist++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
     } // info键处理结束
   }
-  
+  int num_pieces = ret->length/ret->piece_len;
+    if(ret->length % ret->piece_len != 0)
+        num_pieces++;
+    ret->num_pieces = num_pieces;
   // 确认已填充了必要的字段
   
   be_free(ben_res);  

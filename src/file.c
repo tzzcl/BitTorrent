@@ -152,11 +152,11 @@ int list_set_piece(struct fileinfo_t *fileinfo, int filenum, char *buf, int len,
 }
 
 int list_get_piece(struct fileinfo_t *fileinfo, int filenum, char *buf, int len, int begin){
-    printf("%s:%p %d %p %d %d\n",__FUNCTION__,fileinfo,filenum,buf,len,begin);
     if (fileinfo[filenum - 1].begin_index + fileinfo[filenum - 1].size < begin + len){
         printf("write beyond file list\n");
         return -1;
     }
+    puts("1");
     int i;
     for (i = 0; i < filenum; i++){
         if (fileinfo[i].begin_index <= begin && fileinfo[i].begin_index + fileinfo[i].size > begin){

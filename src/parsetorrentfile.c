@@ -112,19 +112,18 @@ torrentmetadata_t* parsetorrentfile(char* filename)
         {
           ret->name = (char*)malloc(strlen(idict[j].val->val.s)*sizeof(char));
 		  memset(ret->name,0,sizeof(char)*strlen(idict[j].val->val.s)*sizeof(char));
-          char * name="/home/tzzcl";
-          int l=be_str_len(idict[j].val);
+                char* name="/home/tzzcl";
+                int l=be_str_len(idict[j].val);
 		  int temp=l-1;
 		  puts(idict[j].val->val.s);
 		  for (;idict[j].val->val.s[temp]!='/';temp--);
 		  strcpy(ret->name,name);
-          memcpy(ret->name+strlen(name),idict[j].val->val.s+temp,l-temp);
-	      if (multifile == 0){
+                memcpy(ret->name+strlen(name),idict[j].val->val.s+temp,l-temp);
+	         if (multifile == 0){
                         ret->filenum = 1;
                         ret->flist[0].begin_index = 0;
-                        strcpy(ret->flist[0].filename, ret->name);
-						
-          }
+                        strcpy(ret->flist[0].filename, ret->name);		
+               }
           filled++;
         }
         if(!strncmp(idict[j].key,"piece length",strlen("piece length")))

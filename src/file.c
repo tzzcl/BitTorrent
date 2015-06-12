@@ -152,6 +152,7 @@ int list_set_piece(struct fileinfo_t *fileinfo, int filenum, char *buf, int len,
 }
 
 int list_get_piece(struct fileinfo_t *fileinfo, int filenum, char *buf, int len, int begin){
+    printf("%s:%p %d %p %d %d\n",__FUNCTION__,fileinfo,filenum,buf,len,begin);
     if (fileinfo[filenum - 1].begin_index + fileinfo[filenum - 1].size < begin + len){
         printf("write beyond file list\n");
         return -1;
@@ -198,7 +199,6 @@ char *gen_bitfield(char *piece_hash, int piece_len, int piece_num){
         int blocksize = (i != piece_num - 1)?piece_len:(cursize - (piece_num - 1) * piece_len);
 
         list_get_piece(filelist, filenum, hashbuf, blocksize, piece_len * i);
-        puts("AAA");
         SHA1Context sha;
         SHA1Reset(&sha);
         SHA1Input(&sha, (const unsigned char*)hashbuf, blocksize);

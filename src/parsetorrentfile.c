@@ -110,7 +110,14 @@ torrentmetadata_t* parsetorrentfile(char* filename)
         if(!strncmp(idict[j].key,"name",strlen("name")))
         {
           ret->name = (char*)malloc(strlen(idict[j].val->val.s)*sizeof(char));
-          memcpy(ret->name,idict[j].val->val.s,strlen(idict[j].val->val.s));
+          char * name="/home/tzzcl";
+          int l=be_str_len(idict[j].val);
+		  int temp=l-1;
+		  puts(idict[j].val->val.s);
+		  printf("%d\n",temp);
+		  for (;idict[j].val->val.s[temp]!='\/';temp--);
+		  strcpy(ret->name,name);
+          memcpy(ret->name+strlen(name),idict[j].val->val.s+temp,l-temp);
 	      if (multifile == 0){
                         ret->filenum = 1;
                         ret->flist[0].begin_index = 0;

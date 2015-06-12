@@ -61,7 +61,7 @@ FILE* createfile(char* filepath,int size){
 		}
 		close(fd);
 	}
-	FILE* fp=fopen("filepath","r+");
+	FILE* fp=fopen(filepath,"r+");
 	if (fp==NULL)
 	{
 		int temp=errno;
@@ -156,7 +156,6 @@ int list_get_piece(struct fileinfo_t *fileinfo, int filenum, char *buf, int len,
         printf("write beyond file list\n");
         return -1;
     }
-    puts("1");
     int i;
     for (i = 0; i < filenum; i++){
         if (fileinfo[i].begin_index <= begin && fileinfo[i].begin_index + fileinfo[i].size > begin){

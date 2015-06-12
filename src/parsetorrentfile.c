@@ -136,7 +136,6 @@ torrentmetadata_t* parsetorrentfile(char* filename)
         }
 
       } // for循环结束
-	  printf("%p\n",idict[j].key);
       for (j = 0; idict[j].key != NULL; j++){
                 if (!strcmp(idict[j].key, "files")){
                     assert(idict[j].val->type == BE_LIST);

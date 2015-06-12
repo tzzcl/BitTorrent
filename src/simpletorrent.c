@@ -11,6 +11,7 @@
 #include "btdata.h"
 #include "bencode.h"
 #include <pthread.h>
+#define DEBUG(x) x
 //#define MAXLINE 4096 
 // pthread数据
 extern ListHead p2p_cb_head;
@@ -69,6 +70,7 @@ int main(int argc, char **argv)
     val[i] = rand();
   }
   memcpy(g_my_id,(char*)val,20);
+  DEBUG(puts(g_my_id));
   strncpy(g_my_ip,argv[2],strlen(argv[2]));
   g_my_ip[strlen(argv[2])+1] = '\0';
   
@@ -80,7 +82,6 @@ int main(int argc, char **argv)
   g_filelen = g_torrentmeta->length;
   g_num_pieces = g_torrentmeta->num_pieces;
   g_filedata = (char*)malloc(g_filelen*sizeof(char));
-
   announce_url_t* announce_info;
   announce_info = parse_announce_url(g_torrentmeta->announce);
   // 提取tracker url中的IP地址

@@ -158,6 +158,7 @@ int main(int argc, char **argv)
 
   free(announce_info);
   announce_info = NULL;
+  printf("%d\n",g_peerport);
   listenfd=make_listen_port(g_peerport);
   if (listenfd==0)
   {

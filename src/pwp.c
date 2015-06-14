@@ -456,6 +456,7 @@ void* p2p_run_thread(void* param){
 					newcb->peer_interest=1;
 					newcb->self_choke=0;
 					pthread_mutex_lock(&first_req_mutex);
+					puts("AAA");
 					if (first_req==1)
 					{
 						pthread_mutex_unlock(&first_req_mutex);

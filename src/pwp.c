@@ -732,7 +732,6 @@ void send_handshake(int connfd){
     	}
     	memcpy(msg+9+pstrlen,tmphash,20);
     	memcpy(msg+29+pstrlen,g_my_id,20);
-	puts(__FUNCTION__);
 	//to do global hash
 	send(connfd,msg,len,0);
 }

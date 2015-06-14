@@ -330,18 +330,21 @@ void* p2p_run_thread(void* param){
 		}
 		switch (pre[4]){
 			case 0:{//choke
+				puts("choke");
 				pthread_mutex_lock(&p2p_mutex);
 				newcb->self_choke=1;
 				pthread_mutex_unlock(&p2p_mutex);
 				break;
 			}
 			case 1:{//unchoke
+				puts("unchoke");
 				pthread_mutex_lock(&p2p_mutex);
 				newcb->self_choke=0;
 				pthread_mutex_unlock(&p2p_mutex);
 				break;
 			}
 			case 2:{//interest
+				puts("interest");
 				pthread_mutex_lock(&p2p_mutex);
 				newcb->self_interest=1;
 				newcb->self_choke=0;
@@ -349,12 +352,14 @@ void* p2p_run_thread(void* param){
 				break;
 			}
 			case 3:{
+				puts("not_interest");
 				pthread_mutex_lock(&p2p_mutex);
 				newcb->self_interest=0;
 				pthread_mutex_unlock(&p2p_mutex);
 				break;
 			}
 			case 4:{//have
+				puts("have");
 				int index;
 				readn(connfd,&index,4);
 				index=htonl(index);
@@ -392,7 +397,7 @@ void* p2p_run_thread(void* param){
 						download_piece* d_piece=find_download_piece(index);
 						pthread_mutex_lock(&p2p_mutex);
 						pthread_mutex_lock(&download_mutex);
-						puts("CCCC");
+
 						if (d_piece!=NULL&&d_piece->download_num<MAX_REQUEST
 							&&d_piece->download_num!=0
 							&&newcb->self_choke==0
@@ -412,6 +417,7 @@ void* p2p_run_thread(void* param){
 				break;
 			}
 			case 5:{
+				puts("bitfield");
 				char field[len-1];
 				readn(connfd,field,len-1);
 				if (len-1!=bit)
@@ -510,6 +516,7 @@ void* p2p_run_thread(void* param){
 				break;
 			}
 			case 6:{
+				puts("request");
 				int temp[3];
 				readn(connfd,temp,12);
 				int index=ntohl(temp[0]);
@@ -534,6 +541,7 @@ void* p2p_run_thread(void* param){
 				break;
 			}
 			case 7:{//piece
+				puts("piece");
 				char payload[len-1];
 				readn(connfd,payload,len-1);
 				int index = ntohl(*(int*)payload);

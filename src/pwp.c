@@ -661,6 +661,7 @@ void* p2p_run_thread(void* param){
 
 }
 void send_have(int connfd,int index){
+	puts(__FUNCTION__);
 	char msg[9];
 	memset(msg,0,sizeof(msg));
 	*(int*)msg = htonl(1);
@@ -669,6 +670,7 @@ void send_have(int connfd,int index){
     	send(connfd,msg,9,0);	
 }
 void send_request(int connfd,int index,int begin,int length){
+	puts(__FUNCTION__);
 	char msg[17];
 	memset(msg,0,sizeof(msg));
 	*(int*)msg = htonl(13);
@@ -679,6 +681,7 @@ void send_request(int connfd,int index,int begin,int length){
     	send(connfd,msg,17,0);	
 }
 void send_interest(int connfd){
+	puts(__FUNCTION__);
 	char msg[5];
 	memset(msg,0,sizeof(msg));
 	*(int*)msg = htonl(1);
@@ -686,6 +689,7 @@ void send_interest(int connfd){
     	send(connfd,msg,5,0);
 }
 void send_choke(int connfd){
+	puts(__FUNCTION__);
 	char msg[5];
 	memset(msg,0,sizeof(msg));
 	*(int*)msg = htonl(1);
@@ -693,6 +697,7 @@ void send_choke(int connfd){
     	send(connfd,msg,5,0);
 }
 void send_not_interest(int connfd){
+	puts(__FUNCTION__);
 	char msg[5];
 	memset(msg,0,sizeof(msg));
 	*(int*)msg = htonl(1);
@@ -700,6 +705,7 @@ void send_not_interest(int connfd){
     	send(connfd,msg,5,0);
 }
 void send_msg(int connfd){
+	puts(__FUNCTION__);
 	char msg[5];
 	memset(msg,0,sizeof(msg));
 	*(int*)msg = htonl(1);
@@ -707,6 +713,7 @@ void send_msg(int connfd){
     	send(connfd,msg,5,0);
 }
 void send_piece(int connfd,int index,int begin,int length){
+	puts(__FUNCTION__);
 	char block[length];
 	get_block(index,begin,length,block);
 	char msg[13];
@@ -718,6 +725,7 @@ void send_piece(int connfd,int index,int begin,int length){
     	send(connfd,block+begin,length,0);
 }
 void send_handshake(int connfd){
+	puts(__FUNCTION__);
 	char* pstr="BitTorrent protocol";
 	const int pstrlen=19;
 	const int len=49+pstrlen;

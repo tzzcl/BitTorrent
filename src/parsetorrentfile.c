@@ -120,6 +120,7 @@ torrentmetadata_t* parsetorrentfile(char* filename)
 		  strcpy(ret->name,name);
                 memcpy(ret->name+strlen(name),idict[j].val->val.s+temp,l-temp);
                 printf("%s:%s\n",__FUNCTION__,ret->name);
+                printf("%d %d\n",l,temp);
 	         if (multifile == 0){
                         ret->filenum = 1;
                         ret->flist[0].begin_index = 0;

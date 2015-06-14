@@ -324,6 +324,7 @@ void* p2p_run_thread(void* param){
 		}
 		pthread_mutex_unlock(&download_mutex);
 		int len=ntohl(*(int*)pre);
+		printf("len %d\n",len);
 		if (len==0){
 			continue;
 		}

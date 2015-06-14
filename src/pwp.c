@@ -590,7 +590,6 @@ void* p2p_run_thread(void* param){
                         					continue;
                         				}
                         				int next_index=select_piece();
-                        				printf("%s:%d\n","next_index",next_index);
                         				download_piece* next_d_piece;
                         				if (next_index!=-1)
                         					next_d_piece=init_download_piece(next_index);
@@ -604,6 +603,7 @@ void* p2p_run_thread(void* param){
                         				list_foreach(ptr,&p2p_cb_head)
                         				{
                         					p2p_cb* temp=list_entry(ptr,p2p_cb,list);
+                        					printf("%d %d\n",temp->connfd,connfd);
                         					char* first_bitfield=g_bitfield;
                         					char* second_bitfield=temp->peer_field;
                         					if (!is_interested_bitfield(first_bitfield,second_bitfield,bit)

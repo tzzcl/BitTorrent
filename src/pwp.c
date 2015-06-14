@@ -321,6 +321,7 @@ void* p2p_run_thread(void* param){
 		pthread_mutex_lock(&download_mutex);
 		list_foreach(ptr,&download_piece_head){
 			download_piece* now_piece=list_entry(ptr,download_piece,list);
+			printf("**** %d ****\n",now_piece->index);
 		}
 		pthread_mutex_unlock(&download_mutex);
 		int len=ntohl(*(int*)pre);

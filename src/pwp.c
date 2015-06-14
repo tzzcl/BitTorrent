@@ -375,6 +375,7 @@ void* p2p_run_thread(void* param){
 						{
 							int begin,length;
 							select_next_subpiece(index,&begin,&length);
+							puts("CCCC");
 							send_request(index,begin,length);
 							first_req=0;
 							download_piece* d_piece=init_download_piece(index);

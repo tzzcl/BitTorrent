@@ -175,6 +175,7 @@ download_piece* find_download_piece(int index){
 	return NULL;
 }
 download_piece *init_download_piece(int index){
+	printf("%d %p\n",index,find_download_piece(index));
 	if (find_download_piece(index)!=NULL) return NULL;
 	download_piece* now=malloc(sizeof(download_piece));
 	now->index=index;

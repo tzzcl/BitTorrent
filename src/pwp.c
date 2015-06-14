@@ -676,7 +676,7 @@ void* p2p_run_thread(void* param){
 
 }
 void send_have(int connfd,int index){
-	puts(__FUNCTION__);
+	printf("%s:%d %d\n",__FUNCTION__,connfd,index);
 	char msg[9];
 	memset(msg,0,sizeof(msg));
 	*(int*)msg = htonl(1);

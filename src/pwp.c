@@ -375,7 +375,6 @@ void* p2p_run_thread(void* param){
 						{
 							int begin,length;
 							select_next_subpiece(index,&begin,&length);
-							puts("CCCC");
 							send_request(index,begin,length);
 							first_req=0;
 							download_piece* d_piece=init_download_piece(index);
@@ -393,6 +392,7 @@ void* p2p_run_thread(void* param){
 						download_piece* d_piece=find_download_piece(index);
 						pthread_mutex_lock(&p2p_mutex);
 						pthread_mutex_lock(&download_mutex);
+						puts("CCCC");
 						if (d_piece!=NULL&&d_piece->download_num<MAX_REQUEST
 							&&d_piece->download_num!=0
 							&&newcb->self_choke==0

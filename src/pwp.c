@@ -191,6 +191,7 @@ download_piece *init_download_piece(int index){
     	pthread_mutex_lock(&download_mutex);
     	list_add_before(&download_piece_head,&now->list);
 	pthread_mutex_unlock(&download_mutex);
+	return now;
 }
 int select_next_subpiece(int index,int* begin,int* length){
 	ListHead* ptr;

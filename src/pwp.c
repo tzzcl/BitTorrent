@@ -462,7 +462,7 @@ void* p2p_run_thread(void* param){
 						for (int i=0;i<g_torrentmeta->num_pieces;i++)
 						{
 							if (get_bit_at_index(first_bitfield,i)==0
-							&&get_bit_at_index(second_bitfield,i)==0
+							&&get_bit_at_index(second_bitfield,i)==1
 							&&newcb->self_choke==0
 							&&newcb->peer_interest==1)
 							{

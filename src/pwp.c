@@ -589,6 +589,7 @@ void* p2p_run_thread(void* param){
                         					continue;
                         				}
                         				int next_index=select_piece();
+                        				printf("%s:%d\n","next_index",next_index);
                         				download_piece* next_d_piece;
                         				if (next_index!=-1)
                         					next_d_piece=init_download_piece(next_index);

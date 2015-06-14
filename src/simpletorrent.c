@@ -158,7 +158,8 @@ int main(int argc, char **argv)
 
   free(announce_info);
   announce_info = NULL;
-  printf("peer port:%d\n",g_peerport);
+  g_peerport=rand()%10000+10000;
+  printf("%s:%d\n","g_peer_port",g_peerport);
   listenfd=make_listen_port(g_peerport);
   if (listenfd==0)
   {

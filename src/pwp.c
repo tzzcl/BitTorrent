@@ -685,7 +685,7 @@ void send_have(int connfd,int index){
     	send(connfd,msg,9,0);	
 }
 void send_request(int connfd,int index,int begin,int length){
-	puts(__FUNCTION__);
+	printf("%s:%d %d %d\n",__FUNCTION__,connfd,index,begin,length);
 	char msg[17];
 	memset(msg,0,sizeof(msg));
 	*(int*)msg = htonl(13);

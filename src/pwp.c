@@ -366,7 +366,6 @@ void* p2p_run_thread(void* param){
 				int index;
 				readn(connfd,&index,4);
 				index=ntohl(index);
-				printf("have %d\n",index);
 				set_bit_at_index(newcb->peer_field,index,1);
 				pthread_mutex_lock(&piece_count_mutex);
 				piece_counter[index]++;
@@ -408,6 +407,7 @@ void* p2p_run_thread(void* param){
 							&&newcb->peer_interest==1)
 							{
 								int begin,length;
+								puts("AAA");
 								select_next_subpiece(index,&begin,&length);
 								send_request(connfd,index,begin,length);
 								d_piece->download_num++;

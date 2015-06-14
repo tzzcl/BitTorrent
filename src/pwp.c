@@ -558,7 +558,7 @@ void* p2p_run_thread(void* param){
                         			d_piece->sub_piece_state[subpiece_index]=2;
                         			if (!select_next_subpiece(index,&begin,&length))
                         			{
-                        				printf("piece %d has been dowmloaded successfully\n",index);
+                        				printf("piece %d has been downloaded successfully\n",index);
                         				set_bit_at_index(g_bitfield,index,1);
                         				list_del(&d_piece->list);
                         				safe_free(d_piece->sub_piece_state);
@@ -604,7 +604,7 @@ void* p2p_run_thread(void* param){
                         					p2p_cb* temp=list_entry(ptr,p2p_cb,list);
                         					char* first_bitfield=g_bitfield;
                         					char* second_bitfield=temp->peer_field;
-                        					if (!is_interested_bitfield(first_bitfield,second_bitfield,len)
+                        					if (!is_interested_bitfield(first_bitfield,second_bitfield,bit)
                         						&&temp->peer_interest==1)
                         					{
                         						send_not_interest(temp->connfd);

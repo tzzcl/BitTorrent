@@ -723,10 +723,16 @@ void send_handshake(int connfd){
 	const int len=49+pstrlen;
 	char msg[len];
 	memset(msg,0,sizeof(msg));
-	char* content=msg;
-	content[0]=19;
-	content++;
-	memcpy(content,pstr,sizeof(char)*pstrlen);
+	msg[0]=19;
+	memcpy(msg+1,pstr,sizeof(char)*pstrlen);
+	int tmphash[5];
+    	int i;
+    	for (i = 0; i < 5; i++){
+        		tmphash[i] = htonl(g_torrentmeta->info_hash[i]);
+    	}
+    	memcpy(msg+9+pstrlen,tmphash,20);
+    	memcpy(msg+29+pstrlen,g_my_id,20);
+	puts(__FUNCTION__);
 	//to do global hash
 	send(connfd,msg,len,0);
 }

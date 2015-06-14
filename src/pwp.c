@@ -450,7 +450,7 @@ void* p2p_run_thread(void* param){
 				pthread_mutex_lock(&p2p_mutex);
 				char* first_bitfield=g_bitfield;
 				char* second_bitfield=newcb->peer_field;
-				if (is_interested_bitfield(first_bitfield,second_bitfield,len))
+				if (is_interested_bitfield(first_bitfield,second_bitfield,bit))
 				{
 					send_interest(connfd);
 					newcb->peer_interest=1;

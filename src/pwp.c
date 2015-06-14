@@ -630,6 +630,7 @@ void* p2p_run_thread(void* param){
                         						int begin1,length1;
                         						if (!select_next_subpiece(next_index,&begin1,&length1))
                         							no_sub_piece=1;
+                        						printf("%s:%d\n","temp->connfd",temp->connfd);
                         						send_request(temp->connfd,next_index,begin1,length1);
                         						next_d_piece->download_num++;
                         						int subpiece_index=begin1/next_d_piece->sub_piece_size;

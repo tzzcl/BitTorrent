@@ -362,7 +362,7 @@ void* p2p_run_thread(void* param){
 				break;
 			}
 			case 4:{//have
-				puts("have");
+				puts("receive have");
 				int index;
 				readn(connfd,&index,4);
 				index=ntohl(index);

@@ -23,6 +23,7 @@ extern pthread_mutex_t download_mutex;
 extern pthread_mutex_t first_req_mutex;
 extern pthread_mutex_t piece_count_mutex;
 extern int* piece_counter;
+char * name;
 int listenfd;
 void init()
 {
@@ -46,7 +47,7 @@ void *show_speed(void *arg){
         double speed = (double)(current_download - old_download)/3.0;
         double proportion = (double)current_download/(double)g_torrentmeta->length;
         int index = (proportion >= 1)?0:(49 - (int)(proportion * 50));
-        printf("speed:%5.1fKB/s [%-50s]\r", speed / 1024, &bar[index]);
+        printf("speed:%5.1fKB/s [%-50s]\r\n", speed / 1024, &bar[index]);
         old_download = current_download;
         fflush(stdout);
     }
@@ -89,8 +90,6 @@ int main(int argc, char **argv)
   int sockfd = -1;
   char rcvline[MAXLINE];
   char tmp[MAXLINE];
-  FILE* f;
-  int rc;
   int i;
  
 // 注意: 你可以根据自己的需要修改这个程序的使用方法
@@ -101,7 +100,7 @@ int main(int argc, char **argv)
     printf("\t 0 indicates a downloading client and will connect to other clients and receive connections\n");
     exit(-1);
   }
-
+  name=argv[3];
   int iseed = 0;
   if( argc > 4 ) {
     iseed = !!atoi(argv[4]);

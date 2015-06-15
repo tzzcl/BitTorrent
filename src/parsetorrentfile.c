@@ -5,6 +5,7 @@
 #include <assert.h>
 #define DEBUG(x) x
 // 注意: 这个函数只能处理单文件模式torrent
+extern char* name;
 torrentmetadata_t* parsetorrentfile(char* filename)
 {
   int i;
@@ -112,7 +113,6 @@ torrentmetadata_t* parsetorrentfile(char* filename)
         {
           ret->name = (char*)malloc(80);
 		  memset(ret->name,0,80);
-                char* name="/home/tzzcl";
                 int l=be_str_len(idict[j].val);
 		  int temp=l-1;
 		  puts(idict[j].val->val.s);

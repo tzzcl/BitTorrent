@@ -232,7 +232,7 @@ int main(int argc, char **argv)
     printf("Parsing tracker data\n");
     g_tracker_response = get_tracker_data(tmp2,tr->size);
     
-    if(tmp)
+    if(tmp[0])
     {
       free(tmp2);
       tmp2 = NULL;

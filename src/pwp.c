@@ -499,13 +499,14 @@ void* p2p_run_thread(void* param){
 			case 5:{
 				DEBUG(puts("bitfield");)
 				char field[len-1];
-				readn(connfd,field,len-1);
 				if (len-1!=bit)
 				{
 					puts("wrong bitfield");
 					drop_conn(newcb);
 					return NULL;
 				}
+				readn(connfd,field,len-1);
+				
 				unsigned char ch=field[len-2];
 				int offset = 8 - g_torrentmeta->num_pieces%8;
 				while (offset>=1&&offset<8)

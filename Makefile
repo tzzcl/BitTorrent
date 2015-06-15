@@ -1,6 +1,6 @@
 GITFLAGS = -q  --no-verify --allow-empty
 CC=gcc
-CFLAGS= -Wall -pedantic -std=c99 -g -O2
+CFLAGS= -Wall -pedantic -std=c99 -g
 LIBS= -lpthread
 TARGET=simpletorrent
 SOURCES=src/util.c \
@@ -44,5 +44,5 @@ clean:
 	rm -rf *.o
 	rm -rf ${TARGET}
 	rm -rf *.core
-
+	rm -rf test_movie.mp4
 .PHONY: all clean

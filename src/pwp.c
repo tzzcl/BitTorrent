@@ -26,7 +26,7 @@ void send_have(int connfd,int index){
 	printf("%s:%d %d\n",__FUNCTION__,connfd,index);
 	char msg[9];
 	memset(msg,0,sizeof(msg));
-	*(int*)msg = htonl(1);
+	*(int*)msg = htonl(5);
 	msg[4] = 4;
 	*(int*)(msg+5) = htonl(index);
     	send(connfd,msg,9,0);	

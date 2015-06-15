@@ -1,6 +1,6 @@
 GITFLAGS = -q  --no-verify --allow-empty
 CC=gcc
-CFLAGS= -Wall -pedantic -std=c99 -g
+CFLAGS= -Wall -pedantic -std=c99 -O2
 LIBS= -lpthread
 TARGET=simpletorrent
 SOURCES=src/util.c \

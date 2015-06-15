@@ -547,7 +547,10 @@ void* p2p_run_thread(void* param){
 							&&newcb->peer_interest==1)
 							{
 								download_piece* d_piece=init_download_piece(i);
-								printf("%d %p\n",i,d_piece);
+								if (d_piece==NULL) 
+								{
+								continue;
+								}
 								pthread_mutex_lock(&download_mutex);
 								d_piece->download_num++;
 								pthread_mutex_unlock(&download_mutex);

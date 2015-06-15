@@ -724,6 +724,7 @@ void* p2p_run_thread(void* param){
                         					pthread_mutex_unlock(&download_mutex);
                         				}
                         				pthread_mutex_unlock(&p2p_mutex);
+                        				pthread_mutex_unlock(&download_mutex);
                         			}
                         			else
                         			{

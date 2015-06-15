@@ -32,7 +32,7 @@ void send_have(int connfd,int index){
     	send(connfd,msg,9,0);	
 }
 void send_request(int connfd,int index,int begin,int length){
-	printf("%s:%d %d %d\n",__FUNCTION__,connfd,index,begin,length);
+	printf("%s:%d %d %d %d\n",__FUNCTION__,connfd,index,begin,length);
 	char msg[17];
 	memset(msg,0,sizeof(msg));
 	*(int*)msg = htonl(13);
@@ -157,7 +157,7 @@ static inline void drop_conn(p2p_cb* nowp2p)
 }
 
 int listen_init(){
-	int listenfd,connfd;
+	int listenfd;
 	struct sockaddr_in servaddr;
 	if ((listenfd=socket(AF_INET,SOCK_STREAM,0))<0)
 	{

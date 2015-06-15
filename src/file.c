@@ -147,7 +147,6 @@ int list_set_piece(struct fileinfo_t *fileinfo, int filenum, char *buf, int len,
             }
         }
     }
-    assert(false && "if argu pass the first if stmt, it shouldn't access here");
     return -1;
 }
 
@@ -171,8 +170,7 @@ int list_get_piece(struct fileinfo_t *fileinfo, int filenum, char *buf, int len,
                 return partsize + list_get_piece(fileinfo, filenum, buf + writesize, len - writesize, begin + writesize);
             }
         }
-    }
-    assert(false && "if argu pass the first if stmt, it shouldn't access here");
+    }\
     return -1;
 }
 

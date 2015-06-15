@@ -156,7 +156,7 @@ static inline void drop_conn(p2p_cb* nowcb)
 	safe_free(nowcb);
 }
 
-int listen_init(){
+/*int listen_init(){
 	int listenfd;
 	struct sockaddr_in servaddr;
 	if ((listenfd=socket(AF_INET,SOCK_STREAM,0))<0)
@@ -171,7 +171,7 @@ int listen_init(){
 	bind(listenfd,(struct sockaddr*)&servaddr,sizeof(servaddr));
 	listen(listenfd,8);
 	return listenfd;
-}
+}*/
 static inline int is_bitfield_complete(char *bitfield){
     for(int i = 0; i < g_torrentmeta->num_pieces; i++){
         if(get_bit_at_index(bitfield,i) != 1)

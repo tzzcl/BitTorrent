@@ -45,4 +45,5 @@ clean:
 	rm -rf ${TARGET}
 	rm -rf *.core
 	rm -rf test_movie.mp4
+	rm -rf dir_test/*
 .PHONY: all clean

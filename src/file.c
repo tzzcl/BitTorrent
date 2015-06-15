@@ -211,7 +211,6 @@ char *gen_bitfield(char *piece_hash, int piece_len, int piece_num){
             sha.Message_Digest[j] = htonl(sha.Message_Digest[j]);
         }
         if (memcmp(sha.Message_Digest, ptr->hash, 20) == 0){
-            printf("write 1\n");
             g_downloaded += g_torrentmeta->piece_len;
             set_bit_at_index(bitfield, i, 1);
         } else {

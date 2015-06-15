@@ -22,6 +22,90 @@ pthread_mutex_t first_req_mutex;
 pthread_mutex_t piece_count_mutex;
 int listenfd;
 static unsigned char set_bit[8] = {1,2,4,8,16,32,64,128};
+void send_have(int connfd,int index){
+	printf("%s:%d %d\n",__FUNCTION__,connfd,index);
+	char msg[9];
+	memset(msg,0,sizeof(msg));
+	*(int*)msg = htonl(1);
+	msg[4] = 4;
+	*(int*)(msg+5) = htonl(index);
+    	send(connfd,msg,9,0);	
+}
+void send_request(int connfd,int index,int begin,int length){
+	printf("%s:%d %d %d\n",__FUNCTION__,connfd,index,begin,length);
+	char msg[17];
+	memset(msg,0,sizeof(msg));
+	*(int*)msg = htonl(13);
+	msg[4] = 6;
+	*(int*)(msg+5) = htonl(index);
+	*(int*)(msg+9) = htonl(begin);
+	*(int*)(msg+13) = htonl(length);
+    	send(connfd,msg,17,0);	
+}
+void send_interest(int connfd){
+	puts(__FUNCTION__);
+	char msg[5];
+	memset(msg,0,sizeof(msg));
+	*(int*)msg = htonl(1);
+	msg[4] = 2;
+    	send(connfd,msg,5,0);
+}
+void send_choke(int connfd){
+	puts(__FUNCTION__);
+	char msg[5];
+	memset(msg,0,sizeof(msg));
+	*(int*)msg = htonl(1);
+	msg[4] = 0;
+    	send(connfd,msg,5,0);
+}
+void send_not_interest(int connfd){
+	puts(__FUNCTION__);
+	char msg[5];
+	memset(msg,0,sizeof(msg));
+	*(int*)msg = htonl(1);
+	msg[4] = 3;
+    	send(connfd,msg,5,0);
+}
+void send_msg(int connfd){
+	puts(__FUNCTION__);
+	char msg[5];
+	memset(msg,0,sizeof(msg));
+	*(int*)msg = htonl(1);
+	msg[4] = 1;
+    	send(connfd,msg,5,0);
+}
+void send_piece(int connfd,int index,int begin,int length){
+	puts(__FUNCTION__);
+	char block[length];
+	get_block(index,begin,length,block);
+	char msg[13];
+	*(int*)msg = htonl(9+length);
+	msg[4] = 7;
+	*(int*)(msg+5) = htonl(index);
+	*(int*)(msg+9) = htonl(begin);
+    	send(connfd,msg,13,0);
+    	send(connfd,block+begin,length,0);
+}
+void send_handshake(int connfd){
+	puts(__FUNCTION__);
+	char* pstr="BitTorrent protocol";
+	const int pstrlen=19;
+	const int len=49+pstrlen;
+	char msg[len];
+	memset(msg,0,sizeof(msg));
+	msg[0]=19;
+	memcpy(msg+1,pstr,sizeof(char)*pstrlen);
+	int tmphash[5];
+    	int i;
+    	for (i = 0; i < 5; i++){
+        		tmphash[i] = htonl(g_torrentmeta->info_hash[i]);
+    	}
+    	memcpy(msg+9+pstrlen,tmphash,20);
+    	memcpy(msg+29+pstrlen,g_my_id,20);
+	//to do global hash
+	send(connfd,msg,len,0);
+}
+
 static int readn(int fd,void* content,size_t len)
 {
 	int state=0;
@@ -384,7 +468,7 @@ void* p2p_run_thread(void* param){
 						{
 							int begin,length;
 							select_next_subpiece(index,&begin,&length);
-							send_request(index,begin,length);
+							send_request(connfd,index,begin,length);
 							first_req=0;
 							download_piece* d_piece=init_download_piece(index);
 							pthread_mutex_lock(&download_mutex);
@@ -674,87 +758,4 @@ void* p2p_run_thread(void* param){
 	puts("quit p2p success");
 	return NULL;
 
-}
-void send_have(int connfd,int index){
-	printf("%s:%d %d\n",__FUNCTION__,connfd,index);
-	char msg[9];
-	memset(msg,0,sizeof(msg));
-	*(int*)msg = htonl(1);
-	msg[4] = 4;
-	*(int*)(msg+5) = htonl(index);
-    	send(connfd,msg,9,0);	
-}
-void send_request(int connfd,int index,int begin,int length){
-	printf("%s:%d %d %d\n",__FUNCTION__,connfd,index,begin,length);
-	char msg[17];
-	memset(msg,0,sizeof(msg));
-	*(int*)msg = htonl(13);
-	msg[4] = 6;
-	*(int*)(msg+5) = htonl(index);
-	*(int*)(msg+9) = htonl(begin);
-	*(int*)(msg+13) = htonl(length);
-    	send(connfd,msg,17,0);	
-}
-void send_interest(int connfd){
-	puts(__FUNCTION__);
-	char msg[5];
-	memset(msg,0,sizeof(msg));
-	*(int*)msg = htonl(1);
-	msg[4] = 2;
-    	send(connfd,msg,5,0);
-}
-void send_choke(int connfd){
-	puts(__FUNCTION__);
-	char msg[5];
-	memset(msg,0,sizeof(msg));
-	*(int*)msg = htonl(1);
-	msg[4] = 0;
-    	send(connfd,msg,5,0);
-}
-void send_not_interest(int connfd){
-	puts(__FUNCTION__);
-	char msg[5];
-	memset(msg,0,sizeof(msg));
-	*(int*)msg = htonl(1);
-	msg[4] = 3;
-    	send(connfd,msg,5,0);
-}
-void send_msg(int connfd){
-	puts(__FUNCTION__);
-	char msg[5];
-	memset(msg,0,sizeof(msg));
-	*(int*)msg = htonl(1);
-	msg[4] = 1;
-    	send(connfd,msg,5,0);
-}
-void send_piece(int connfd,int index,int begin,int length){
-	puts(__FUNCTION__);
-	char block[length];
-	get_block(index,begin,length,block);
-	char msg[13];
-	*(int*)msg = htonl(9+length);
-	msg[4] = 7;
-	*(int*)(msg+5) = htonl(index);
-	*(int*)(msg+9) = htonl(begin);
-    	send(connfd,msg,13,0);
-    	send(connfd,block+begin,length,0);
-}
-void send_handshake(int connfd){
-	puts(__FUNCTION__);
-	char* pstr="BitTorrent protocol";
-	const int pstrlen=19;
-	const int len=49+pstrlen;
-	char msg[len];
-	memset(msg,0,sizeof(msg));
-	msg[0]=19;
-	memcpy(msg+1,pstr,sizeof(char)*pstrlen);
-	int tmphash[5];
-    	int i;
-    	for (i = 0; i < 5; i++){
-        		tmphash[i] = htonl(g_torrentmeta->info_hash[i]);
-    	}
-    	memcpy(msg+9+pstrlen,tmphash,20);
-    	memcpy(msg+29+pstrlen,g_my_id,20);
-	//to do global hash
-	send(connfd,msg,len,0);
 }

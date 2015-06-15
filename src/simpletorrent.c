@@ -55,7 +55,7 @@ void *show_speed(void *arg){
 void *daemon_listen(void *arg){
     int sockfd = (int)arg;
 
-    printf("daemon is running\n");
+    printf("daemon thread is running\n");
     for(;;){
         struct sockaddr_in cliaddr;
         socklen_t cliaddr_len;

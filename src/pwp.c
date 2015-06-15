@@ -140,20 +140,20 @@ static inline void set_bit_at_index(char *bitfield, int index, int bit){
     if(bit)
         bitfield[index/8] = bitfield[index/8] | set_bit[offset];
     else
-        bitfield[index/8] = bitfield[index/9] & (~set_bit[offset]);
+        bitfield[index/8] = bitfield[index/8] & (~set_bit[offset]);
 }
 static inline void safe_free(void* content){
 	if (content!=NULL)
 		free(content);
 }
-static inline void drop_conn(p2p_cb* nowp2p)
+static inline void drop_conn(p2p_cb* nowcb)
 {
 	pthread_mutex_lock(&p2p_mutex);
-	list_del(&nowp2p->list);
+	list_del(&nowcb->list);
 	pthread_mutex_unlock(&p2p_mutex);
-	safe_free(nowp2p->peer_field);
-	close(nowp2p->connfd);
-	safe_free(nowp2p);
+	safe_free(nowcb->peer_field);
+	close(nowcb->connfd);
+	safe_free(nowcb);
 }
 
 int listen_init(){

@@ -156,9 +156,17 @@ static inline void drop_conn(p2p_cb* nowcb)
 	safe_free(nowcb);
 }
 static inline int is_bitfield_complete(char *bitfield){
-    for(int i = 0; i < g_torrentmeta->num_pieces; i++){
-        if(get_bit_at_index(bitfield,i) != 1)
-            return 0;
+    int len=g_torrentmeta->num_pieces/8;
+
+    for(int i = 0; i < len; i++){
+        if (bitfield[i]!=0xff) return 0;
+    }
+    if (g_torrentmeta->num_pieces%8!=0)
+    {
+    	int size=g_torrentmeta->num_pieces%8;
+    	int begin=g_torrentmeta->num_pieces/8*8;
+    	for (int i=begin;i<begin+size;i++)
+    		if (get_bit_at_index(bitfield,i)==0) return 0;
     }
     return 1;
 }

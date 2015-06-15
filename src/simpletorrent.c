@@ -47,9 +47,8 @@ void *show_speed(void *arg){
         double speed = (double)(current_download - old_download)/3.0;
         double proportion = (double)current_download/(double)g_torrentmeta->length;
         int index = (proportion >= 1)?0:(49 - (int)(proportion * 50));
-        printf("speed:%5.1fKB/s [%-50s]\r\n", speed / 1024, &bar[index]);
+        printf("speed:%5.1fKB/s [%-50s]\n", speed / 1024, &bar[index]);
         old_download = current_download;
-        fflush(stdout);
     }
 }
 

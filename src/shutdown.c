@@ -1,6 +1,7 @@
 #include "btdata.h"
 #include "util.h"
 extern int g_done;
+extern int listenfd;
 // 正确的关闭客户端
 void client_shutdown(int sig)
 {
@@ -15,7 +16,7 @@ void client_shutdown(int sig)
     free(request);
     close(sockfd);
     close(g_peerport);
-	
+    close(listenfd);
     int i;
     for (i = 0; i <g_torrentmeta->filenum; i++){
 		if (g_torrentmeta->flist[i].fp!=NULL)

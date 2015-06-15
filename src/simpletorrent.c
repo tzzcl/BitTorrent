@@ -250,7 +250,12 @@ int main(int argc, char **argv)
     }
 	piece = malloc(g_torrentmeta->num_pieces+1);
 	piece[g_torrentmeta->num_pieces]=0;
-	memset(piece,'-',g_torrentmeta->num_pieces);
+	for (i=0;i<g_torrentmeta->num_pieces;++i) {
+		unsigned char ch = g_bitfield[i/8];
+ 		int offset = 7 - i%8;
+		if ((ch >> offset) & 1) piece[i]='@';
+		else piece[i]='-';
+	}
 	init_window(g_torrentmeta->name);
     for (i = 0; i <g_tracker_response->numpeers; i++){
             if (!valid_ip(g_tracker_response->peers[i].ip)){

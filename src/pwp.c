@@ -703,7 +703,7 @@ void* p2p_run_thread(void* param){
                         						continue;
                         					}
                         					pthread_mutex_lock(&download_mutex);
-                        					if (next_d_piece->download_num<MAX_REQUEST
+                        					if (next_d_piece!=NULL&&next_d_piece->download_num<MAX_REQUEST
                         						&&get_bit_at_index(second_bitfield,next_index)==1
                         						&&temp->self_choke==0&&temp->peer_interest==1)
                         					{

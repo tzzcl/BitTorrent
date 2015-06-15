@@ -605,7 +605,6 @@ void* p2p_run_thread(void* param){
                         				list_foreach(ptr,&p2p_cb_head)
                         				{
                         					p2p_cb* temp=list_entry(ptr,p2p_cb,list);
-                        					printf("%d %d\n",temp->connfd,connfd);
                         					char* first_bitfield=g_bitfield;
                         					char* second_bitfield=temp->peer_field;
                         					if (!is_interested_bitfield(first_bitfield,second_bitfield,bit)
@@ -626,7 +625,7 @@ void* p2p_run_thread(void* param){
                         					}
                         					pthread_mutex_lock(&download_mutex);
                         					if (next_d_piece->download_num<MAX_REQUEST
-                        						&&get_bit_at_index(second_bitfield,index)==1
+                        						&&get_bit_at_index(second_bitfield,next_index)==1
                         						&&temp->self_choke==0&&temp->peer_interest==1)
                         					{
                         						int begin1,length1;

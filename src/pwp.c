@@ -24,67 +24,69 @@ int listenfd;
 static const unsigned char set_bit[8] = {1,2,4,8,16,32,64,128};
 void send_have(int connfd,int index){
 	DEBUG(printf("%s:%d %d\n",__FUNCTION__,connfd,index);)
-	char msg[9];
-	memset(msg,0,sizeof(msg));
+	char* msg=malloc(sizeof(char)*9);
 	*(int*)msg = htonl(5);
 	msg[4] = 4;
 	*(int*)(msg+5) = htonl(index);
     	send(connfd,msg,9,0);	
+    	free(msg);
 }
 void send_request(int connfd,int index,int begin,int length){
 	DEBUG(printf("%s:%d %d %d %d\n",__FUNCTION__,connfd,index,begin,length);)
-	char msg[17];
-	memset(msg,0,sizeof(msg));
+	char* msg=malloc(sizeof(char)*17);
 	*(int*)msg = htonl(13);
 	msg[4] = 6;
 	*(int*)(msg+5) = htonl(index);
 	*(int*)(msg+9) = htonl(begin);
 	*(int*)(msg+13) = htonl(length);
     	send(connfd,msg,17,0);	
+    	free(msg);
 }
 void send_interest(int connfd){
 	DEBUG(puts(__FUNCTION__);)
-	char msg[5];
-	memset(msg,0,sizeof(msg));
+	char* msg=malloc(sizeof(char)*5);
 	*(int*)msg = htonl(1);
 	msg[4] = 2;
     	send(connfd,msg,5,0);
+    	free(msg);
 }
 void send_choke(int connfd){
 	DEBUG(puts(__FUNCTION__);)
-	char msg[5];
-	memset(msg,0,sizeof(msg));
+	char* msg=malloc(sizeof(char)*5);
 	*(int*)msg = htonl(1);
 	msg[4] = 0;
     	send(connfd,msg,5,0);
+    	free(msg);
 }
 void send_not_interest(int connfd){
 	DEBUG(puts(__FUNCTION__);)
-	char msg[5];
-	memset(msg,0,sizeof(msg));
+	char* msg=malloc(sizeof(char)*5);
 	*(int*)msg = htonl(1);
 	msg[4] = 3;
     	send(connfd,msg,5,0);
+    	free(msg);
 }
 void send_msg(int connfd){
 	DEBUG(puts(__FUNCTION__);)
-	char msg[5];
-	memset(msg,0,sizeof(msg));
+	char* msg=malloc(sizeof(char)*5);
 	*(int*)msg = htonl(1);
 	msg[4] = 1;
     	send(connfd,msg,5,0);
+    	free(msg);
 }
 void send_piece(int connfd,int index,int begin,int length){
 	DEBUG(puts(__FUNCTION__);)
-	char block[length];
+	char* block=malloc(sizeof(char)*length);
 	get_block(index,begin,length,block);
-	char msg[13];
+	char* msg=malloc(sizeof(char)*13);
 	*(int*)msg = htonl(9+length);
 	msg[4] = 7;
 	*(int*)(msg+5) = htonl(index);
 	*(int*)(msg+9) = htonl(begin);
     	send(connfd,msg,13,0);
     	send(connfd,block+begin,length,0);
+    	free(block);
+    	free(msg);
 }
 void send_handshake(int connfd){
 	DEBUG(puts(__FUNCTION__);)
@@ -226,7 +228,7 @@ int select_piece(){//least first
 	return min_index;
 }
 int is_interested_bitfield(char *bitfield1, char *bitfield2, int len){
-    char interest_bitfield[len];
+    char* interest_bitfield=malloc(sizeof(char)*len);
     for(int i = 0; i < len; i++){
         interest_bitfield[i] = (~bitfield1[i]) & bitfield2[i]; 
     }
@@ -234,6 +236,7 @@ int is_interested_bitfield(char *bitfield1, char *bitfield2, int len){
         return 0;
     else
         return 1;
+    free(interest_bitfield);
 }
 download_piece* find_download_piece(int index){
 	ListHead* ptr;

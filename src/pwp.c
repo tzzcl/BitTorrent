@@ -384,13 +384,6 @@ void* p2p_run_thread(void* param){
 	char pre[5];
 	while (readn(connfd,pre,4)>0)
 	{
-		ListHead * ptr;
-		pthread_mutex_lock(&download_mutex);
-		list_foreach(ptr,&download_piece_head){
-			download_piece* now_piece=list_entry(ptr,download_piece,list);
-			DEBUG(printf("**** %d ****\n",now_piece->index);)
-		}
-		pthread_mutex_unlock(&download_mutex);
 		int len=ntohl(*(int*)pre);
 		DEBUG(printf("len %d\n",len);)
 		if (len==0){

@@ -110,8 +110,9 @@ static int readn(int fd,void* content,size_t len)
 {
 	int state=0;
 	int cnt=len;
+	char* temp=(char*)content;
 	while (cnt>0){
-		state=recv(fd,content,cnt,0);
+		state=recv(fd,temp,cnt,0);
 		if (state<0)
 		{
 			if (errno==EINTR)
@@ -122,7 +123,7 @@ static int readn(int fd,void* content,size_t len)
 		{
 			return len-cnt;
 		}
-		content+=state;
+		temp+=state;
 		cnt-=state;
 	}
 	return len;

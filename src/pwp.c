@@ -136,7 +136,6 @@ static inline int get_bit_at_index(char *bitfield, int index){
 }
 
 static inline void set_bit_at_index(char *bitfield, int index, int bit){
-    assert(bit == 0 || bit == 1);
     int offset = 7 - index%8;
     if(bit)
         bitfield[index/8] = bitfield[index/8] | set_bit[offset];
@@ -156,23 +155,6 @@ static inline void drop_conn(p2p_cb* nowcb)
 	close(nowcb->connfd);
 	safe_free(nowcb);
 }
-
-/*int listen_init(){
-	int listenfd;
-	struct sockaddr_in servaddr;
-	if ((listenfd=socket(AF_INET,SOCK_STREAM,0))<0)
-	{
-		perror("Problem in creating the listening socket");
-		exit(1);
-	}
-	memset(&servaddr,0,sizeof(servaddr));
-	servaddr.sin_family = AF_INET;
-	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	servaddr.sin_port = htons(PEER_PORT);
-	bind(listenfd,(struct sockaddr*)&servaddr,sizeof(servaddr));
-	listen(listenfd,8);
-	return listenfd;
-}*/
 static inline int is_bitfield_complete(char *bitfield){
     for(int i = 0; i < g_torrentmeta->num_pieces; i++){
         if(get_bit_at_index(bitfield,i) != 1)

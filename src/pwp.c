@@ -11,7 +11,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <pthread.h>
-#define DEBUG(x) x
+#define DEBUG(x) 
 ListHead p2p_cb_head;
 ListHead download_piece_head;
 int first_req=1;
@@ -259,7 +259,7 @@ download_piece* find_download_piece(int index){
 	return NULL;
 }
 download_piece *init_download_piece(int index){
-	printf("%d %p\n",index,find_download_piece(index));
+	DEBUG(printf("%d %p\n",index,find_download_piece(index));)
 	if (find_download_piece(index)!=NULL) return NULL;
 	download_piece* now=malloc(sizeof(download_piece));
 	now->index=index;
@@ -361,7 +361,7 @@ void* p2p_run_thread(void* param){
 	char len;
 	if (readn(connfd,&len,1)>0)
 	{
-		printf("handshake received %d\n",len);
+		DEBUG(printf("handshake received %d\n",len);)
 		char str[len];
 		char reserve[8];
 		int info_hash[5];
@@ -405,11 +405,11 @@ void* p2p_run_thread(void* param){
 		pthread_mutex_lock(&download_mutex);
 		list_foreach(ptr,&download_piece_head){
 			download_piece* now_piece=list_entry(ptr,download_piece,list);
-			printf("**** %d ****\n",now_piece->index);
+			DEBUG(printf("**** %d ****\n",now_piece->index);)
 		}
 		pthread_mutex_unlock(&download_mutex);
 		int len=ntohl(*(int*)pre);
-		printf("len %d\n",len);
+		DEBUG(printf("len %d\n",len);)
 		if (len==0){
 			continue;
 		}
@@ -450,7 +450,7 @@ void* p2p_run_thread(void* param){
 				int index;
 				readn(connfd,&index,4);
 				index=ntohl(index);
-				printf("have:%d\n",index);
+				DEBUG(printf("have:%d\n",index);)
 				set_bit_at_index(newcb->peer_field,index,1);
 				pthread_mutex_lock(&piece_count_mutex);
 				piece_counter[index]++;
@@ -715,7 +715,7 @@ void* p2p_run_thread(void* param){
                         						int begin1,length1;
                         						if (!select_next_subpiece(next_index,&begin1,&length1))
                         							no_sub_piece=1;
-                        						printf("%d\n",no_sub_piece);
+                        						DEBUG(printf("%d\n",no_sub_piece);)
                         						send_request(temp->connfd,next_index,begin1,length1);
 
                         						next_d_piece->download_num++;

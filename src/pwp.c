@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <pthread.h>
+#include "ui.h"
 #define DEBUG(x) 
 ListHead p2p_cb_head;
 ListHead download_piece_head;
@@ -332,7 +333,9 @@ void* p2p_run_thread(void* param){
 		if (connfd==-1)
 		{
 			int tmp = errno;
-            			printf("Error when connect to peer %s:%d, reason:%s\n", current->ip, current->port, strerror(tmp));
+			char line[100];
+            			sprintf(line,"Error when connect to peer %s:%d, reason:%s\n", current->ip, current->port, strerror(tmp));
+				update_info(line);
             			return NULL;
 		}
 		current->connfd=connfd;
@@ -349,7 +352,8 @@ void* p2p_run_thread(void* param){
 	list_add_before(&p2p_cb_head,&newcb->list);
 	pthread_mutex_unlock(&p2p_mutex);
 	if (is_connect){
-		puts("send a handshake");
+		update_info("send a handshake");
+		//puts("send a handshake");
 		send_handshake(connfd);
 	}
 	char len;
@@ -368,7 +372,8 @@ void* p2p_run_thread(void* param){
 		readn(connfd,peer_id,20);
 		if (memcmp(info_hash,g_torrentmeta->info_hash,20)!=0)
 		{
-			puts("wrong hash message");
+			update_info("wrong hash message");
+			//puts("wrong hash message");
 			drop_conn(newcb);
 			return NULL;
 		}
@@ -387,7 +392,9 @@ void* p2p_run_thread(void* param){
        		msg[4] = 5;
         		memcpy(msg+5,g_bitfield,bit);
         		if (send(connfd,msg,5+bit,0) == -1){
-            		printf("Error when send: %s", strerror(errno));
+			char line[100];
+            		sprintf(line,"Error when send: %s", strerror(errno));
+			update_info(line);
             		drop_conn(newcb);
             		return NULL;
         		}
@@ -501,7 +508,8 @@ void* p2p_run_thread(void* param){
 				char field[len-1];
 				if (len-1!=bit)
 				{
-					puts("wrong bitfield");
+					update_info("wrong bitfield");
+					//puts("wrong bitfield");
 					drop_conn(newcb);
 					return NULL;
 				}
@@ -610,7 +618,8 @@ void* p2p_run_thread(void* param){
 				int length=ntohl(temp[2]);
 				if (length>(1<<17))
 				{
-					puts("the length in request is larger than 2^17");
+					update_info("the length in request is larger than 2^17");
+					//puts("the length in request is larger than 2^17");
                              			drop_conn(newcb);
                              			return NULL ;
 				}
@@ -621,7 +630,8 @@ void* p2p_run_thread(void* param){
 				}
 				else
 				{
-					puts("invalid request");
+					update_info("invalid request");
+					//puts("invalid request");
 				}
 				pthread_mutex_unlock(&p2p_mutex);
 				break;
@@ -631,6 +641,7 @@ void* p2p_run_thread(void* param){
 				char payload[len-1];
 				readn(connfd,payload,len-1);
 				int index = ntohl(*(int*)payload);
+				piece[index]='@';
                         			int begin = ntohl(*(int*)(payload+4));
                         			int length = len - 9;
                         			download_piece* d_piece=find_download_piece(index);
@@ -642,7 +653,9 @@ void* p2p_run_thread(void* param){
                         			d_piece->sub_piece_state[subpiece_index]=2;
                         			if (!select_next_subpiece(index,&begin,&length))
                         			{
-                        				printf("piece %d has been downloaded successfully\n",index);
+							char line[100];
+                        				sprintf(line,"piece %d has been downloaded successfully\n",index);
+							update_info(line);
                         				set_bit_at_index(g_bitfield,index,1);
                         				list_del(&d_piece->list);
                         				safe_free(d_piece->sub_piece_state);
@@ -657,7 +670,8 @@ void* p2p_run_thread(void* param){
                         				pthread_mutex_unlock(&p2p_mutex);
                         				if (is_bitfield_complete(g_bitfield))
                         				{
-                        					puts("File Download Complete!");
+                        					//puts("File Download Complete!");
+								update_info("File Download Complete!");
                         					ListHead* ptr;
                         					pthread_mutex_lock(&p2p_mutex);
                         					list_foreach(ptr,&p2p_cb_head)
@@ -753,7 +767,8 @@ void* p2p_run_thread(void* param){
 	pthread_mutex_unlock(&p2p_mutex);
 	safe_free(newcb->peer_field);
 	safe_free(newcb);
-	puts("quit p2p success");
+	update_info("quit p2p success");
+	//puts("quit p2p success");
 	return NULL;
 
 }

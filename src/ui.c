@@ -47,9 +47,15 @@ void update_speed(const char* info) {
 
 void update_info(const char* newinfo) {
 	for (int i=11;i>0;--i) {
-		info[i]=info[i-1];
+		if (info[i]!=NULL) free(info[i]);
+		if (info[i-1]!=NULL) {
+			info[i]=malloc(strlen(info[i-1])+1);
+			strcpy(info[i],info[i-1]);
+		}
 	}
-	info[0]=newinfo;
+	if (info[0]!=NULL) free(info[0]);
+	info[0]=malloc(strlen(newinfo)+1);
+	strcpy(info[0],newinfo);
 	for (int i=11;i>=0;--i) {
 		if (info[i]!=NULL) mvaddstr(LINES-5-i,1,info[i]);
 	}

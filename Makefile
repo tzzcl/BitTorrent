@@ -1,5 +1,5 @@
 GITFLAGS = -q  --no-verify --allow-empty
-CC=gcc
+CC=clang
 CFLAGS= -Wall -pedantic -std=c99 -g
 LIBS= -lpthread
 TARGET=simpletorrent

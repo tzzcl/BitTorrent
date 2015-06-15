@@ -1,7 +1,7 @@
 GITFLAGS = -q  --no-verify --allow-empty
 CC=gcc
 CFLAGS= -Wall -pedantic -std=c99 -g
-LIBS= -lpthread
+LIBS= -lpthread -lncurses
 TARGET=simpletorrent
 SOURCES=src/util.c \
         src/bencode.c \
@@ -13,7 +13,8 @@ SOURCES=src/util.c \
 				src/process_tracker_response.c \
 				src/simpletorrent.c \
 				src/pwp.c \
-				src/file.c
+				src/file.c \
+				src/ui.c
 
 OBJS=src/util.o \
      src/bencode.o \
@@ -25,7 +26,8 @@ OBJS=src/util.o \
 		 src/process_tracker_response.o \
 		 src/simpletorrent.o \
 		 src/pwp.o \
-		 src/file.o
+		 src/file.o \
+		 src/ui.o
 
 all: ${TARGET}
 	-@git add . --ignore-errors

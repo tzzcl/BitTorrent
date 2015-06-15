@@ -418,21 +418,21 @@ void* p2p_run_thread(void* param){
 		}
 		switch (pre[4]){
 			case 0:{//choke
-				puts("choke");
+				DEBUG(puts("choke");)
 				pthread_mutex_lock(&p2p_mutex);
 				newcb->self_choke=1;
 				pthread_mutex_unlock(&p2p_mutex);
 				break;
 			}
 			case 1:{//unchoke
-				puts("unchoke");
+				DEBUG(puts("unchoke");)
 				pthread_mutex_lock(&p2p_mutex);
 				newcb->self_choke=0;
 				pthread_mutex_unlock(&p2p_mutex);
 				break;
 			}
 			case 2:{//interest
-				puts("interest");
+				DEBUG(puts("interest");)
 				pthread_mutex_lock(&p2p_mutex);
 				newcb->self_interest=1;
 				newcb->self_choke=0;
@@ -440,7 +440,7 @@ void* p2p_run_thread(void* param){
 				break;
 			}
 			case 3:{
-				puts("not_interest");
+				DEBUG(puts("not_interest");)
 				pthread_mutex_lock(&p2p_mutex);
 				newcb->self_interest=0;
 				pthread_mutex_unlock(&p2p_mutex);
@@ -492,7 +492,6 @@ void* p2p_run_thread(void* param){
 							&&newcb->peer_interest==1)
 							{
 								int begin,length;
-								puts("AAA");
 								select_next_subpiece(index,&begin,&length);
 								send_request(connfd,index,begin,length);
 								d_piece->download_num++;
@@ -506,7 +505,7 @@ void* p2p_run_thread(void* param){
 				break;
 			}
 			case 5:{
-				puts("bitfield");
+				DEBUG(puts("bitfield");)
 				char field[len-1];
 				readn(connfd,field,len-1);
 				if (len-1!=bit)
@@ -605,7 +604,7 @@ void* p2p_run_thread(void* param){
 				break;
 			}
 			case 6:{
-				puts("request");
+				DEBUG(puts("request");)
 				int temp[3];
 				readn(connfd,temp,12);
 				int index=ntohl(temp[0]);
@@ -630,7 +629,7 @@ void* p2p_run_thread(void* param){
 				break;
 			}
 			case 7:{//piece
-				puts("piece");
+				DEBUG(puts("piece");)
 				char payload[len-1];
 				readn(connfd,payload,len-1);
 				int index = ntohl(*(int*)payload);

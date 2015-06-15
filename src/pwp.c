@@ -458,6 +458,11 @@ void* p2p_run_thread(void* param){
 							send_request(connfd,index,begin,length);
 							first_req=0;
 							download_piece* d_piece=init_download_piece(index);
+							if (d_piece==NULL) 
+							{
+								pthread_mutex_unlock(&p2p_mutex);
+								continue;
+							}
 							pthread_mutex_lock(&download_mutex);
 							d_piece->download_num++;
 							pthread_mutex_unlock(&download_mutex);
@@ -542,7 +547,11 @@ void* p2p_run_thread(void* param){
 							&&newcb->peer_interest==1)
 							{
 								download_piece* d_piece=init_download_piece(i);
-								printf("%d %p\n",i,d_piece);
+								if (d_piece==NULL) 
+								{
+								pthread_mutex_unlock(&p2p_mutex);
+								continue;
+								}
 								pthread_mutex_lock(&download_mutex);
 								d_piece->download_num++;
 								pthread_mutex_unlock(&download_mutex);

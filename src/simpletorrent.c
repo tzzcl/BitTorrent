@@ -12,7 +12,7 @@
 #include "btdata.h"
 #include "pwp.h"
 #include "bencode.h"
-#include <pthread.h>
+#include "ui.h"
 #define DEBUG(x) x
 //#define MAXLINE 4096 
 // pthread数据
@@ -40,14 +40,15 @@ void init()
 }
 void *show_speed(void *arg){
     int old_download = g_downloaded;
-    char bar[] = "=================================================>";
+    char info[50];
     for(;;){
         sleep(2);
         int current_download = g_downloaded;
         double speed = (double)(current_download - old_download)/3.0;
         double proportion = (double)current_download/(double)g_torrentmeta->length;
         int index = (proportion >= 1)?0:(49 - (int)(proportion * 50));
-        printf("speed:%5.1fKB/s [%-50s]\n", speed / 1024, &bar[index]);
+        sprintf(info,"speed:%5.1fKB/s", speed / 1024);
+        update_speed(info);
         old_download = current_download;
     }
 }
@@ -247,6 +248,10 @@ int main(int argc, char **argv)
       printf("Peer ip: %s\n",g_tracker_response->peers[i].ip);
       printf("Peer port: %d\n",g_tracker_response->peers[i].port);
     }
+	piece = malloc(g_torrentmeta->num_pieces+1);
+	piece[g_torrentmeta->num_pieces]=0;
+	memset(piece,'-',g_torrentmeta->num_pieces);
+	init_window(g_torrentmeta->name);
     for (i = 0; i <g_tracker_response->numpeers; i++){
             if (!valid_ip(g_tracker_response->peers[i].ip)){
                 pthread_t tid;
@@ -255,14 +260,15 @@ int main(int argc, char **argv)
                 param->port = g_tracker_response->peers[i].port;
                 strcpy(param->ip,g_tracker_response->peers[i].ip);
                 if (pthread_create(&tid, NULL, p2p_run_thread, param) != 0){
-                    printf("Error when create thread to connect peer\n");
+      //              printf("Error when create thread to connect peer\n");
                 } else {
-                    printf("Success create thread to connect peer %s\n", g_tracker_response->peers[i].ip);
+      //              printf("Success create thread to connect peer %s\n", g_tracker_response->peers[i].ip);
                 }
             }
         }
-
-        printf("sleep %d seconds\n", g_tracker_response->interval);
+	char line[100];
+        sprintf(line,"sleep %d seconds\n", g_tracker_response->interval);
+	update_info(line);
     // 必须等待td->interval秒, 然后再发出下一个GET请求
     sleep(g_tracker_response->interval);
 

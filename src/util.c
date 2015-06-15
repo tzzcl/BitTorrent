@@ -32,7 +32,7 @@ int connect_to_host(char* ip, int port)
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
   if (sockfd < 0)
   {
-    perror("Could not create socket");
+  //  perror("Could not create socket");
     return(-1);
   }
 
@@ -44,7 +44,7 @@ int connect_to_host(char* ip, int port)
 
   if (connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)) < 0)
   {
-    perror("Error connecting to socket");
+  //  perror("Error connecting to socket");
     return(-1);
   }
 
@@ -58,7 +58,7 @@ int make_listen_port(int port)
   sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
   if(sockfd <0)
   {
-    perror("Could not create socket");
+  //  perror("Could not create socket");
     return 0;
   }
 
@@ -71,13 +71,13 @@ int make_listen_port(int port)
 
   if(bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) < 0)
   {
-      perror("Could not bind socket");
+  //    perror("Could not bind socket");
       return 0;
   }
 
   if(listen(sockfd, 20) < 0)
   {
-    perror("Error listening on socket");
+  //  perror("Error listening on socket");
     return 0;
   }
 
@@ -108,7 +108,7 @@ int recvline(int fd, char **line)
   
   if (*line == NULL)
   {
-    perror("malloc");
+  //  perror("malloc");
     return -1;
   }
   

@@ -392,9 +392,9 @@ void* p2p_run_thread(void* param){
        		msg[4] = 5;
         		memcpy(msg+5,g_bitfield,bit);
         		if (send(connfd,msg,5+bit,0) == -1){
-			char line[100];
+					char line[100];
             		sprintf(line,"Error when send: %s", strerror(errno));
-			update_info(line);
+					update_info(line);
             		drop_conn(newcb);
             		return NULL;
         		}
